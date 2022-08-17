@@ -1,5 +1,7 @@
-import requests
+import random
 import time
+import requests
+from flask import json
 from sqlalchemy.sql.expression import func
 from src.app.models.country import Country, countries_share_schema
 from src.app.models.state import State, states_share_schema
@@ -10,6 +12,31 @@ from src.app.models.role import Role
 from src.app.models.user import User, user_share_schema
 from src.app.models.product_category import ProductCategory
 from src.app.models.inventory import Inventory
+
+
+def read_json():
+    try:
+        with open(f'src\\app\database\dados_inventario.json', 'r') as File:
+            json_object = json.load(File)
+            return json_object
+
+    except:
+        return None
+
+
+def gera_password(): 
+    letras = "abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ123456789"
+    caracter = '!@#$%&^*-_'
+
+    password = ""
+
+    for i in range(0, 1):
+        password_caracter = random.choice(caracter)
+        password += password_caracter
+        for h in range(0, 14):
+            password_letras = random.choice(letras)
+            password += password_letras
+    return password
 
 
 def populate_db():
@@ -102,4 +129,26 @@ def populate_db():
                 name=role,
                 permissions=permissions_admin_sist
             )
+    
+    categories = ["Perifericos", "Eletronicos", "Eletrodomesticos", "Ferramentas", "Outros acessorios"]
+
+    for category in categories:
+        ProductCategory.seed(
+            description=category
+        )
+
+    dados_inventario = read_json()
+
+    for item in dados_inventario:
+        for category in categories:
+            if category == item['categoria']:
+                Inventory.seed(
+                    product_category_id=category,
+                    title= item['name'],
+                    product_code=int(round(time.time() * 1000)),
+                    value= item['price'],
+                    brand= item['brand'],
+                    template= item['template'],
+                    description=item['description']
+                )
     
