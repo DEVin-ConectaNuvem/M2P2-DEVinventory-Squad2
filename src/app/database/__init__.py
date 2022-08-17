@@ -2,14 +2,13 @@ import random
 import time
 import requests
 from flask import json
-from sqlalchemy.sql.expression import func
 from src.app.models.country import Country, countries_share_schema
 from src.app.models.state import State, states_share_schema
-from src.app.models.city import City, cities_share_schema
-from src.app.models.gender import Gender, gender_share_schema
+from src.app.models.city import City
+from src.app.models.gender import Gender
 from src.app.models.permission import Permission
 from src.app.models.role import Role
-from src.app.models.user import User, user_share_schema
+from src.app.models.user import User
 from src.app.models.product_category import ProductCategory
 from src.app.models.inventory import Inventory
 
@@ -90,14 +89,9 @@ def populate_db():
             description=permission
         )
 
-    roles = ["Desenvolvedor Frontend", "Desenvolvedor Backend", "Coordenador", "Administrador do Sistema"]
+    roles = ["devfront", "devback", "coordenador", "admin"]
     
-    roles_description = {
-        'dev_front': 'O usuário dev. front end poderá ler e escrever no sistema.',
-        'dev_back': 'O usuário dev. back end poderá ler, escrever, atualizar os itens no sistema.',
-        'coordenador': 'O usuário coordenador poderá somente fazer a leitura dos dados no sistema.',
-        'admin': 'O usuário administrador do sistema poderá ler, escrever, deletar e atualizar os dados no sistema.'
-        }       
+    roles_description = { "devfront": "Desenvolvedor Frontend", "devback": "Desenvolvedor Backend", "coordenador": "Coordenador", "admin": "Administrador do Sistema" }       
 
     permissions_dev_front = Permission.query.filter(Permission.description.in_(['READ', 'WRITE'])).all()
     permissions_dev_back = Permission.query.filter(Permission.description.in_(['READ', 'WRITE', 'UPDATE'])).all()
@@ -107,13 +101,13 @@ def populate_db():
     for index, role in enumerate(roles):
         if index == 0:
             Role.seed(
-                description=roles_description['dev_front'],
+                description=roles_description['devfront'],
                 name=role,
                 permissions=permissions_dev_front
             )
         elif index == 1:
             Role.seed(
-                description=roles_description['dev_back'],
+                description=roles_description['devback'],
                 name=role,
                 permissions=permissions_dev_back
             )
