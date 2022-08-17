@@ -78,7 +78,7 @@ def populate_db():
             name=city['nome']
         )
 
-    genders_descriptions = ["Masculino", "Feminino"]
+    genders_descriptions = ["Masculino", "Feminino", "Outro"]
 
     for gender in genders_descriptions:
         Gender.seed(description=gender)
@@ -171,9 +171,9 @@ def populate_db():
         for gen in genders_db_data: 
             if gen.description == gender:
                 gender_id = gen.id
-                for city in cities_db_data:    
-                    if city.name == user['location']['city']:
-                        city_id = city.id
+        for city in cities_db_data:    
+            if city.name == user['location']['city']:
+                city_id = city.id
         User.seed(
         gender_id = gender_id,
         city_id= city_id,
