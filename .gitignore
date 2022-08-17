@@ -44,3 +44,5 @@ poetry/core/*
 .vscode
 client_secret.json
 __pycache__
+venv/
+requirements.txt
