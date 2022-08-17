@@ -48,4 +48,15 @@ def populate_db():
             state_id=state_id,
             name=city['nome']
         )
+
+    genders_descriptions = ["Masculino", "Feminino"]
+
+    for gender in genders_descriptions:
+        Gender.seed(description=gender)
     
+    permissions = ['DELETE', 'READ', 'WRITE', 'UPDATE']
+
+    for permission in permissions:
+        Permission.seed(
+            description=permission
+        )
