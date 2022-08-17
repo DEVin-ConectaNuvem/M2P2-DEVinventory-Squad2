@@ -143,19 +143,20 @@ def populate_db():
     for item in dados_inventario:
         for category in category_db_data:
             if category.description == item['categoria']:
-                cod = str(round(time.time() * 1000))
-                cod_split = cod[7:]
-                time.sleep(1)
-                Inventory.seed(
-                    product_category_id=category.id,
-                    user_id=None,
-                    title= item['name'],
-                    product_code=int(cod_split),
-                    value= item['price'],
-                    brand= item['brand'],
-                    template= item['template'],
-                    description=item['description']
-                )
+                cat_id = category.id
+        cod = str(round(time.time() * 1000))
+        cod_split = cod[7:]
+        time.sleep(1)
+        Inventory.seed(
+            product_category_id=cat_id,
+            user_id=None,
+            title= item['name'],
+            product_code=int(cod_split),
+            value= item['price'],
+            brand= item['brand'],
+            template= item['template'],
+            description=item['description']
+        )
 
     users_data_request = requests.get('https://randomuser.me/api?nat=br&results=10')
 
@@ -189,5 +190,5 @@ def populate_db():
         street = user['location']['street']['name'],
         number_street = user['location']['street']['number']
         )
-    print('Dados inseridos na database.')
-    return
+    
+    return print('Dados inseridos na database.')
