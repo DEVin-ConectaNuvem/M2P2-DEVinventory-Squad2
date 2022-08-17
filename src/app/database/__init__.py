@@ -151,4 +151,29 @@ def populate_db():
                     template= item['template'],
                     description=item['description']
                 )
-    
+
+    users_data_request = requests.get('https://randomuser.me/api?nat=br&results=10')
+
+    gender_description = {"male": "Masculino", "female" :"Feminino"}
+
+    cities_db_data = City.query.order_by(City.name.asc()).all()
+    cities_db_dict = cities_share_schema.dump(cities_db_data)
+
+    for user in users_data_request.json()['results']:
+        if user['gender'] in gender_description:
+            gender = gender_description[user['gender']]
+        for city in cities_db_dict:    
+            if city['name'] == user['location']['city']:
+                User.seed(
+                gender_id = gender,
+                city_id= city['id'],
+                name = user['name']['first'] + ' ' + user['name']['last'],
+                age = user['dob']['date'],
+                email = user['email'],
+                phone = user['cell'],
+                password = gera_password(),
+                street = user['location']['street']['name'],
+                number_street = user['location']['street']['number']
+                )
+    print('Dados inseridos na database.')
+    return
