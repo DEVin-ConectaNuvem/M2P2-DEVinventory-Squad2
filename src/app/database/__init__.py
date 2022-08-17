@@ -1,4 +1,6 @@
 import requests
+import time
+from sqlalchemy.sql.expression import func
 from src.app.models.country import Country, countries_share_schema
 from src.app.models.state import State, states_share_schema
 from src.app.models.city import City, cities_share_schema
@@ -60,3 +62,44 @@ def populate_db():
         Permission.seed(
             description=permission
         )
+
+    roles = ["Desenvolvedor Frontend", "Desenvolvedor Backend", "Coordenador", "Administrador do Sistema"]
+    
+    roles_description = {
+        'dev_front': 'O usuário dev. front end poderá ler e escrever no sistema.',
+        'dev_back': 'O usuário dev. back end poderá ler, escrever, atualizar os itens no sistema.',
+        'coordenador': 'O usuário coordenador poderá somente fazer a leitura dos dados no sistema.',
+        'admin': 'O usuário administrador do sistema poderá ler, escrever, deletar e atualizar os dados no sistema.'
+        }       
+
+    permissions_dev_front = Permission.query.filter(Permission.description.in_(['READ', 'WRITE'])).all()
+    permissions_dev_back = Permission.query.filter(Permission.description.in_(['READ', 'WRITE', 'UPDATE'])).all()
+    permissions_coord = Permission.query.filter(Permission.description.in_(['READ'])).all()
+    permissions_admin_sist = Permission.query.filter(Permission.description.in_(['DELETE', 'READ', 'WRITE', 'UPDATE'])).all()
+
+    for index, role in enumerate(roles):
+        if index == 0:
+            Role.seed(
+                description=roles_description['dev_front'],
+                name=role,
+                permissions=permissions_dev_front
+            )
+        elif index == 1:
+            Role.seed(
+                description=roles_description['dev_back'],
+                name=role,
+                permissions=permissions_dev_back
+            )
+        elif index == 2:
+            Role.seed(
+                description=roles_description['coordenador'],
+                name=role,
+                permissions=permissions_coord
+            )
+        else:
+            Role.seed(
+                description=roles_description['admin'],
+                name=role,
+                permissions=permissions_admin_sist
+            )
+    
