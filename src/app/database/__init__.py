@@ -9,6 +9,7 @@ from src.app.models.user import User, user_share_schema
 from src.app.models.product_category import ProductCategory
 from src.app.models.inventory import Inventory
 
+
 def populate_db():
 
     country = Country.query.first()
@@ -37,3 +38,14 @@ def populate_db():
 
     states_db_data = State.query.order_by(State.name.asc()).all()
     state_db_dict = states_share_schema.dump(states_db_data)
+
+    for city in cities_data_request.json():
+        state_id = 0
+        for state in state_db_dict:
+            if state['initials'] == city['microrregiao']['mesorregiao']['UF']['sigla']:
+                state_id = state['id']
+        City.seed(
+            state_id=state_id,
+            name=city['nome']
+        )
+    
