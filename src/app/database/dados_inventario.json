@@ -1,0 +1,66 @@
+[
+    {
+        "categoria": "Perifericos", 
+        "name": "Mouse wireless", 
+        "price": 159.89, 
+        "brand": "Phillips", 
+        "template": "ph34k3", 
+        "description": "mouse sem fio para trabalhos remotos." 
+    },
+    {
+        "categoria": "Perifericos", 
+        "name": "Teclado com fio", 
+        "price": 59.89, 
+        "brand": "Multilazer", 
+        "template": "mult3rr3", 
+        "description": "Teclado com fio para trabalhos remotos." 
+    },
+    {
+        "categoria": "Eletronicos", 
+        "name": "Notebook", 
+        "price": 3159.79, 
+        "brand": "Dell", 
+        "template": "vostro5480", 
+        "description": "Notebook intel 8100 8gb ram 500gb hd." 
+    },
+    {
+        "categoria": "Eletrodomesticos", 
+        "name": "Frigobar", 
+        "price": 632.89, 
+        "brand": "Britania", 
+        "template": "frig-340", 
+        "description": "frigobar 45 litros." 
+    },
+    {
+        "categoria": "Ferramentas", 
+        "name": "Furadeira", 
+        "price": 177.89, 
+        "brand": "Makita", 
+        "template": "m4k1t4", 
+        "description": "Furadeira e parafusadeira 220v 1500 w." 
+    },
+    {
+        "categoria": "Ferramentas", 
+        "name": "Jogo de chaves", 
+        "price": 119.89, 
+        "brand": "Phillips", 
+        "template": "tye33r3", 
+        "description": "Conjunto de 3 chaves philips, fenda e estrela." 
+    },
+    {
+        "categoria": "Eletrodomesticos", 
+        "name": "Cafeteira", 
+        "price": 149.10, 
+        "brand": "Agrato", 
+        "template": "kkjop-4355", 
+        "description": "Café expresso e normal." 
+    },
+    {
+        "categoria": "Outros acessorios", 
+        "name": "Cadeira", 
+        "price": 349.10, 
+        "brand": "Pichau", 
+        "template": "gmar-4d56", 
+        "description": "Cadeira gamer pichau com encosto para cabeça." 
+    }
+]

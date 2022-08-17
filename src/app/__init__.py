@@ -21,4 +21,6 @@ def create_app():
     Migrate(app=app, db=db, directory='./src/app/migrations')
     CORS(app)
 
+    from src.app.models import country, state, city, permission, role, gender, user, product_category, inventory
+
     return app
