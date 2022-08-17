@@ -137,15 +137,20 @@ def populate_db():
             description=category
         )
 
+    category_db_data = ProductCategory.query.all()
     dados_inventario = read_json()
 
     for item in dados_inventario:
-        for category in categories:
-            if category == item['categoria']:
+        for category in category_db_data:
+            if category.description == item['categoria']:
+                cod = str(round(time.time() * 1000))
+                cod_split = cod[7:]
+                time.sleep(1)
                 Inventory.seed(
-                    product_category_id=category,
+                    product_category_id=category.id,
+                    user_id=None,
                     title= item['name'],
-                    product_code=int(round(time.time() * 1000)),
+                    product_code=int(cod_split),
                     value= item['price'],
                     brand= item['brand'],
                     template= item['template'],
@@ -157,23 +162,32 @@ def populate_db():
     gender_description = {"male": "Masculino", "female" :"Feminino"}
 
     cities_db_data = City.query.order_by(City.name.asc()).all()
-    cities_db_dict = cities_share_schema.dump(cities_db_data)
+    genders_db_data = Gender.query.all()
 
     for user in users_data_request.json()['results']:
         if user['gender'] in gender_description:
             gender = gender_description[user['gender']]
-        for city in cities_db_dict:    
-            if city['name'] == user['location']['city']:
-                User.seed(
-                gender_id = gender,
-                city_id= city['id'],
-                name = user['name']['first'] + ' ' + user['name']['last'],
-                age = user['dob']['date'],
-                email = user['email'],
-                phone = user['cell'],
-                password = gera_password(),
-                street = user['location']['street']['name'],
-                number_street = user['location']['street']['number']
-                )
+        for gen in genders_db_data: 
+            if gen.description == gender:
+                gender_id = gen.id
+                for city in cities_db_data:    
+                    if city.name == user['location']['city']:
+                        city_id = city.id
+        User.seed(
+        gender_id = gender_id,
+        city_id= city_id,
+        role_id=random.randint(1,4),
+        name = user['name']['first'] + ' ' + user['name']['last'],
+        age = user['dob']['date'],
+        email = user['email'],
+        phone = user['cell'],
+        password = gera_password(),
+        cep=None,
+        complement=None,
+        landmark=None,
+        district=None,
+        street = user['location']['street']['name'],
+        number_street = user['location']['street']['number']
+        )
     print('Dados inseridos na database.')
     return
