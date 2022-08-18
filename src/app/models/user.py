@@ -91,7 +91,7 @@ class UserNewSchema(ma.Schema):
     roles = ma.Nested(roles_share_schema)
 
     class Meta: 
-        fields = ('id', 'role.name', 'name', 'email', 'phone')
+        fields = ('id', 'role.description', 'name', 'email', 'phone')
 
 
 user_role_share_schema = UserNewSchema()
