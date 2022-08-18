@@ -146,10 +146,7 @@ poetry run flask populate_db
 
 ## Desenvolvedores
 
-[<sub>Breno Martins</sub><br><img src="https://avatars.githubusercontent.com/u/95316873?v=4" width=100><br>](https://github.com/Breno-MT)
-[<sub>Luiz Gustavo Seeman</sub><br><img src="https://avatars.githubusercontent.com/u/101838119?v=4" width=100><br>](https://github.com/Gustavo-Seemann)
-[<sub>Marcelo Coelho</sub><br><img src="https://avatars.githubusercontent.com/u/92119579?v=4" width=100><br>](https://github.com/MCoelho222)
-[<sub>Rafael Telles Carneiro</sub><br><img src="https://avatars.githubusercontent.com/u/98103640?v=4" width=100><br>](https://github.com/rafatellescarneiro)
-[<sub>Josinaldo Andrade Pereira</sub><br><img src="https://avatars.githubusercontent.com/u/101839277?v=4" width=100><br>](https://github.com/josinaldoandradepereira)
-[<sub>Thiago William</sub><br><img src="https://avatars.githubusercontent.com/u/94487053?v=4" width=100><br>](https://github.com/ThiagoW21)
+| [<sub>Breno Martins</sub><br><img src="https://avatars.githubusercontent.com/u/95316873?v=4" width=100><br>](https://github.com/Breno-MT) | [<sub>Luiz Gustavo Seeman</sub><br><img src="https://avatars.githubusercontent.com/u/101838119?v=4" width=100><br>](https://github.com/Gustavo-Seemann) | [<sub>Marcelo Coelho</sub><br><img src="https://avatars.githubusercontent.com/u/92119579?v=4" width=100><br>](https://github.com/MCoelho222) | 
+| :---: | :---: | :---: |
+| [<sub>Rafael Telles Carneiro</sub><br><img src="https://avatars.githubusercontent.com/u/98103640?v=4" width=100><br>](https://github.com/rafatellescarneiro) | [<sub>Josinaldo Andrade Pereira</sub><br><img src="https://avatars.githubusercontent.com/u/101839277?v=4" width=100><br>](https://github.com/josinaldoandradepereira) | [<sub>Thiago William</sub><br><img src="https://avatars.githubusercontent.com/u/94487053?v=4" width=100><br>](https://github.com/ThiagoW21) | 
 [<sub>Vinicius Possatto Stormoski</sub><br><img src="https://avatars.githubusercontent.com/u/101053966?v=4" width=100><br>](https://github.com/ViniciusPosssatto)
