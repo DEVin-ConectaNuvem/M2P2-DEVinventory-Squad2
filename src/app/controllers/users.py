@@ -7,20 +7,18 @@ user = Blueprint('user', __name__, url_prefix='/user')
 @user.route("/", methods = ['POST'])
 def list_user():
     
-    data = request.get_json()
-
     list_users = User.query.all()
 
     list_users_dict = teste_users_schema.dump(list_users)
 
-    if data == {}:
-        return jsonify(list_users_dict), 200
+    # if data == {}:
+    #     return jsonify(list_users_dict), 200
 
-    if data['name'] == "":
+    # if data['name'] == "":
         
-        return jsonify(list_users_dict), 200
+    #     return jsonify(list_users_dict), 200
 
 
-    return jsonify(data), 200
+    return jsonify(list_users_dict), 200
 
 
