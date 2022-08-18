@@ -1,22 +1,22 @@
 import random
+import os
 import time
 import requests
 from flask import json
-from sqlalchemy.sql.expression import func
 from src.app.models.country import Country, countries_share_schema
 from src.app.models.state import State, states_share_schema
-from src.app.models.city import City, cities_share_schema
-from src.app.models.gender import Gender, gender_share_schema
+from src.app.models.city import City
+from src.app.models.gender import Gender
 from src.app.models.permission import Permission
 from src.app.models.role import Role
-from src.app.models.user import User, user_share_schema
+from src.app.models.user import User
 from src.app.models.product_category import ProductCategory
 from src.app.models.inventory import Inventory
 
 
 def read_json():
     try:
-        with open(f'src\\app\database\dados_inventario.json', 'r') as File:
+        with open(f'{os.getcwd()}/src/app/database/dados_inventarios.json', 'r') as File:
             json_object = json.load(File)
             return json_object
 
@@ -46,7 +46,7 @@ def populate_db():
     if country != None:
         print("Já existem dados populados no banco.")
         return 
-    
+
     brasil_code = 76
     country_data_request = requests.get(f"https://servicodados.ibge.gov.br/api/v1/localidades/paises/{brasil_code}")
     states_data_request = requests.get("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
