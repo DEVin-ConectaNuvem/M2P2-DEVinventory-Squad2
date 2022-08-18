@@ -4,7 +4,7 @@ from src.app.models.user import User, teste_users_schema
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
-@user.route("/", methods = ['POST'])
+@user.route("/", methods = ['GET'])
 def list_user():
     
     list_users = User.query.all()
