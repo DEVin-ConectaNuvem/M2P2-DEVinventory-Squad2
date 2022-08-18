@@ -25,7 +25,7 @@ def list_user_per_page(users):
 
         return jsonify(list_name_dict), 200
 
-    list_users = User.query.paginate(per_page=2, page=users, error_out=True)
+    list_users = User.query.paginate(per_page=20, page=users, error_out=True)
 
     list_users_dict = users_roles_share_schema.dump(list_users.items)
 
