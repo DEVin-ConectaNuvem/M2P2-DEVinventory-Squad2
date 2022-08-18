@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from src.app.models.user import User, users_share_schema
+from src.app.models.user import User
 from src.app.models.inventory import Inventory, intentories_share_schema
 
 
@@ -19,17 +19,16 @@ def list_all_requirements():
     total_items_price = 0
     total_items_loaned = 0
     for item in inventory_dict:
-        print(item)
         if item['user_id'] != None:
             total_items_loaned += 1
-        elif item['value'] > 0 and item['value'] != None:
+        if item['value'] > 0 and item['value'] != None:
             total_items_price += item['value']
 
     return_dados = {
         'total_items': total_items, 
         'total_users': total_users, 
         'total_items_loaned': total_items_loaned,
-        'total_items_price': total_items_price
+        'total_items_price': round(total_items_price, 2)
         }
 
     return jsonify(return_dados), 200
