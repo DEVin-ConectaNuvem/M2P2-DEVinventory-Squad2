@@ -2,10 +2,11 @@ import click
 from flask.cli import with_appcontext
 from src.app import create_app, db
 from src.app.database import populate_db
-
+from src.app.routes import routes
 
 app = create_app()
 
+routes(app)
 
 @click.command(name='populate_db')
 @with_appcontext
