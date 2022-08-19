@@ -5,6 +5,7 @@ from flask.wrappers import Response
 from src.app.services.user_services import make_login
 from src.app.services.user_services import create_user
 from src.app.utils import allkeys_in
+from src.app.middlewares.auth import requires_access_level
 from src.app.models.user import User, users_roles_share_schema
 from src.app.models.city import City, cities_share_schema
 from src.app.models.gender import Gender, genders_share_schema
@@ -40,6 +41,7 @@ def list_user_per_page(users):
     return jsonify(list_users_dict), 200
 
 @user.route("/create", methods = ['POST'])
+@requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
 def post_create_users():
     
     list_keys = ['gender', 'city', 'role', 'name', 'age', 'email',\
