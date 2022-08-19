@@ -28,5 +28,5 @@ def create_user(gender_id, city_id, role_id, name, age, email,\
         return {"message": "Usuário criado com sucesso."}
 
     except:
-        return {"error": "Erro na criação de Usuário."}
+        return {"error": "Erro na criação de Usuário. Verifique os dados novamente."}
 
