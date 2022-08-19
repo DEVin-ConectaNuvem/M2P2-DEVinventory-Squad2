@@ -23,3 +23,4 @@ def exist_product_code(request_json, data_in_db):
       return True
 
   return False
+
