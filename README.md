@@ -125,10 +125,7 @@ poetry run flask populate_db
 9.
 10. `[GET]/inventory/results (inventories)`
 
-
-<p align="left">
 ## Regras de negócio ENDPOINT 4:
-</p>
 
 - O usuário deve estar logado e possuir autorização (READ, WRITE, UPDATE e DELETE) para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Se estiver faltando algum dos campos obrigatórios, retornar uma mensagem de erro com o Status 400.
