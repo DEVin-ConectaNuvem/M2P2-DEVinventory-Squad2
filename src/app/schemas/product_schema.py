@@ -3,9 +3,8 @@ from src.app.utils.error_messages import handle_error_messages
 
 
 class ProductBodySchema(Schema):
-    product_category_id = fields.Integer(required=True, error_messages=handle_error_messages('product_category_id'))
-    user_id = fields.Integer()
-    product_code = fields.Integer(required=True, error_messages=handle_error_messages('product_code'))
+    product_category = fields.Str(required=True, error_messages=handle_error_messages('product_category_id'))
+    product_code = fields.Str(required=True, error_messages=handle_error_messages('product_code'))
     title = fields.Str(required=True, error_messages=handle_error_messages('title'))
     value = fields.Float(required=True, error_messages=handle_error_messages('value'))
     brand = fields.Str(required=True, error_messages=handle_error_messages('brand'))
