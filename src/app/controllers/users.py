@@ -41,7 +41,7 @@ def list_user_per_page(users):
     return jsonify(list_users_dict), 200
 
 @user.route("/create", methods = ['POST'])
-# @requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
+@requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
 def post_create_users():
     
     list_keys = ['gender_id', 'city_id', 'role_id', 'name', 'age', 'email',\
