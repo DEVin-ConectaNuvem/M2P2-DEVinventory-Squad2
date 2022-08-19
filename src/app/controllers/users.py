@@ -1,12 +1,15 @@
 from types import NoneType
 from flask import Blueprint, jsonify, request
-
+from flask import json
+from flask.wrappers import Response
+from src.app.services.user_services import make_login
+from src.app.services.user_services import create_user
+from src.app.utils import allkeys_in
 from src.app.models.user import User, users_roles_share_schema
 from src.app.models.city import City, cities_share_schema
 from src.app.models.gender import Gender, genders_share_schema
 from src.app.models.role import Role, role_share_schema
-from src.app.services.user_services import create_user
-from src.app.utils import exists_key
+
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -26,13 +29,12 @@ def list_user_per_page(users):
             error = {
                 "Error": "Usuário não encontrado."
             }
-
             return jsonify(error), 204
 
         return jsonify(list_name_dict), 200
 
     list_users = User.query.paginate(per_page=20, page=users, error_out=True)
-
+    
     list_users_dict = users_roles_share_schema.dump(list_users.items)
 
     return jsonify(list_users_dict), 200
@@ -44,7 +46,7 @@ def post_create_users():
         'phone', 'password', 'cep', 'district', \
         'street', 'number_street']
 
-    data = exists_key(request.get_json(), list_keys)
+    data = allkeys_in(request.get_json(), list_keys)
 
     if "error" in data:
         return jsonify(data), 400
@@ -74,7 +76,6 @@ def post_create_users():
     if 'landmark' not in data:
         data['landmark'] = None
     
-
     response = create_user(
         gender_id=get_gender.id,
         city_id=get_city[0].id,
@@ -94,7 +95,32 @@ def post_create_users():
 
     if "error" in response:
         return jsonify(response), 400
-    
-
+   
     return jsonify(response), 201
+
+@user.route("/login", methods=['POST'])
+def user_login():
+    
+    data = request.get_json()
+    keys_list = ['email', 'password']
+    check_keys = allkeys_in(data, keys_list)
+
+    if 'error' in check_keys:
+        return {"error": check_keys}, 401
+    
+    response = make_login(data['email'], data['password'])
+
+    if "error" in response:
+
+        return Response(
+        response= json.dumps({"error": response['error']}),
+        status=response['status_code'],
+        mimetype='application/json'
+        )
+
+    return Response(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
 

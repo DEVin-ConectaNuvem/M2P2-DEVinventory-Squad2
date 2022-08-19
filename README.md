@@ -123,7 +123,18 @@ poetry run flask populate_db
 7.
 8.
 9.
-10.
+10. `[GET]/inventory/results (inventories)`
+
+<p align="left">
+Regras de negócio:
+</p>
+
+- O usuário deve estar logado e possuir autorização READ para este endpoint de inventário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Calcular o número de usuários cadastrados no sistema.
+- Calcular o número de itens cadastrados no sistema.
+- Calcular o valor da soma de todos os preços dos itens.
+- Calcular quantos itens estão emprestados para usuários.
+- Retornar às estatísticas, além do Status 200 (OK).
 
 ## Tecnologias utilizadas
 

@@ -1,16 +1,18 @@
-def exists_key(request_json, list_keys):
+from flask import current_app
+from jwt import encode
 
-    keys_not_found_in_request = []
+def allkeys_in(request_json, keys_list):
+    missing_keys = []
+    for key in range(len(keys_list)):
+        if keys_list[key] not in request_json:
+            missing_keys.append(keys_list[key])
+            
+    if len(missing_keys) > 0:
+        return {"error": f"Está faltando o(s) item(s) {missing_keys}"}
 
-    for key in list_keys:
-        if key in request_json:
-            continue
-        
-        else:
-            keys_not_found_in_request.append(key)
+    return request_json
 
-    if len(keys_not_found_in_request) == 0:    
-        return request_json
-    
-    return {"error": f"Está faltando o(s) item(s) {keys_not_found_in_request}"}
+def generate_jwt(payload):
+    token = encode(payload, current_app.config['SECRET_KEY'], 'HS256')
+    return token
 
