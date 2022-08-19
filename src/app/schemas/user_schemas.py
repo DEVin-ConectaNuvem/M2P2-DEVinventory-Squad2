@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, ValidationError, validates
 from src.app.utils.error_messages import handle_error_messages
+import re
 
 
 def validate_password(password):
@@ -20,9 +21,9 @@ class LoginBodySchema(Schema):
 
 
 class CreateUserBodySchema(Schema):
-    city = fields.Str()
-    gender = fields.Str()
-    role = fields.Str()
+    city_id = fields.Integer()
+    gender_id = fields.Integer()
+    role_id = fields.Integer()
     name = fields.Str(required=True, error_messages=handle_error_messages('name'))
     age = fields.DateTime(required=True, error_messages=handle_error_messages('age'))
     email = fields.Email(required=True, error_messages=handle_error_messages('email'))
@@ -38,3 +39,9 @@ class CreateUserBodySchema(Schema):
     @validates('password')
     def validate(self, password):
         validate_password(password)
+
+    @validates('phone')
+    def validate_phone(self, phone):
+        regex = re.compile(r"^\([1-9]{2}\) (?:[2-8]|9[1-9])[0-9]{3}-[0-9]{4}$")
+        if not re.fullmatch(regex, phone):
+            raise ValidationError('O telefone deve estar no formato: (xx) xxxxx-xxxx')
