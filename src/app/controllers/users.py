@@ -2,17 +2,32 @@ from types import NoneType
 from flask import Blueprint, jsonify, request
 from flask import json
 from flask.wrappers import Response
-from src.app.services.user_services import make_login
-from src.app.services.user_services import create_user
-from src.app.utils import allkeys_in
+from src.app.services.user_services import make_login, create_user
+from src.app.utils import allkeys_in, generate_jwt
 from src.app.middlewares.auth import requires_access_level
 from src.app.models.user import User, users_roles_share_schema
 from src.app.models.city import City, cities_share_schema
 from src.app.models.gender import Gender, genders_share_schema
 from src.app.models.role import Role, role_share_schema
 
+from werkzeug.utils import redirect
+from flask.globals import session
+from google_auth_oauthlib.flow import Flow
+from google import auth 
+from google.oauth2 import id_token 
+
 
 user = Blueprint('user', __name__, url_prefix='/user')
+
+flow = Flow.from_client_secrets_file(
+  client_secrets_file="src/app/database/client_secret.json",
+  scopes=[
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "openid"
+  ],
+  redirect_uri = "http://localhost:5000/user/callback"
+)
 
 @user.route("/", defaults = {"users": 1})
 @user.route("/<int:users>", methods = ['GET'])
@@ -126,3 +141,13 @@ def user_login():
         mimetype='application/json'
     )
 
+@user.route('/auth/google', methods = ["POST"])
+def auth_google():
+  authorization_url, state = flow.authorization_url()
+  session["state"] = state
+
+  return Response(
+      response=json.dumps({'url':authorization_url}),
+      status=200,
+      mimetype='application/json'
+  )
