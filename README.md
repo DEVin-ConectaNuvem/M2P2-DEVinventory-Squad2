@@ -118,12 +118,32 @@ poetry run flask populate_db
 2.
 3.
 4. `[POST]/user/create (users)`
-5.
+5. `[GET]/user/<int:users> ou <string:users> (users)`
 6.
 7.
 8.
 9.
 10. `[GET]/inventory/results (inventories)`
+
+
+## Regras de negócio ENDPOINT 5:
+
+- O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Deve-se retornar os usuários que contenham o nome (name) enviado (usar o Like).
+- O endpoint deve ser paginado, retornando 20 usuários por página.
+- Em caso de não ser enviado nenhum queryParam, deve-se retornar todos os usuários de acordo com a paginação.
+- Caso não seja encontrado nenhum resultado, deve-se retornar o Status 204 (No Content).
+- Caso seja encontrado ao menos um resultado, deve-se retornar um JSON contendo o id, o name, o email, o phone, e o role.name dos usuários, além do Status 200 (OK).
+
+## Query Param (não obrigatório)
+
+`EXAMPLE: http:127.0.0.1:5000/user/1` Para ver a página 1 que irá retornar 20 por página, 
+caso não exista a página irá retornar NOT FOUND 404
+
+`EXAMPLE: http:127.0.0.1:5000/user/NOME ALEATÓRIO` Irá fazer uma requisição de algum nome de sua escolha e irá listar o usuário encontrado.
+Se não, irá dar NO CONTENT 204
+
+`EXAMPLE: http:127.0.0.1:5000/user` Irá te levar para a página 1 caso você não envie nada, mostrará uma lista de 20 usuários.
 
 ## Regras de negócio ENDPOINT 4:
 
