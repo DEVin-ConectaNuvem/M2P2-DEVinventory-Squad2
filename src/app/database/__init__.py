@@ -16,7 +16,7 @@ from src.app.models.inventory import Inventory
 
 def read_json():
     try:
-        with open(f'{os.getcwd()}/src/app/database/dados_inventarios.json', 'r') as File:
+        with open(f'{os.getcwd()}/src/app/database/dados_inventario.json', 'r') as File:
             json_object = json.load(File)
             return json_object
 
