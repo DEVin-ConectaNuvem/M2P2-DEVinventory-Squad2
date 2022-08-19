@@ -1,6 +1,10 @@
+from types import NoneType
 from flask import Blueprint, jsonify, request
 
 from src.app.models.user import User, users_roles_share_schema
+from src.app.models.city import City, cities_share_schema
+from src.app.models.gender import Gender, genders_share_schema
+from src.app.models.role import Role, role_share_schema
 from src.app.services.user_services import create_user
 from src.app.utils import exists_key
 
@@ -36,11 +40,33 @@ def list_user_per_page(users):
 @user.route("/create", methods = ['POST'])
 def post_create_users():
     
-    list_keys = ['gender_id', 'city_id', 'role_id', 'name', 'age', 'email',\
+    list_keys = ['gender', 'city', 'role', 'name', 'age', 'email',\
         'phone', 'password', 'cep', 'district', \
         'street', 'number_street']
 
     data = exists_key(request.get_json(), list_keys)
+
+    if "error" in data:
+        return jsonify(data), 400
+
+    get_gender = Gender.query.filter(Gender.description.ilike(f"%{data['gender']}%")).first()
+    get_city = City.query.filter(City.name.ilike(f"%{data['city']}")).all()
+    get_role = Role.query.filter(Role.name.ilike(f"%{data['role']}%")).first()
+
+    if type(get_gender) == NoneType:
+        return jsonify({"error": "Genêro não existe no banco de dados."}), 404
+
+    if get_city == []:
+        return jsonify({"error": "Cidade não encontrada no banco de dados."}), 404
+
+    if len(get_city) > 1:
+        return jsonify({"error": "Por favor, específique o nome de sua Cidade."}), 400
+
+    if type(get_role) == NoneType:
+        return jsonify({"error": "Role não encontrada no banco de dados."}), 404
+
+    if type(data['age']) == int or type(data['age']) == float:
+        return jsonify({"error": "Digite sua data de nascimento completa."}), 400
 
     if 'complement' not in data:
         data['complement'] = None
@@ -48,21 +74,19 @@ def post_create_users():
     if 'landmark' not in data:
         data['landmark'] = None
     
-    if "error" in data:
-        return jsonify(data), 400
-    
+
     response = create_user(
-        gender_id=data['gender_id'], 
-        city_id=data['city_id'], 
-        role_id=data['role_id'], 
+        gender_id=get_gender.id,
+        city_id=get_city[0].id,
+        role_id=get_role.id,
         name=data['name'],
         age=data['age'],
         email=data['email'],
-        phone=data['phone'], 
+        phone=data['phone'],
         password=data['password'],
         cep=data['cep'],
-        district=data['district'], 
-        street=data['street'], 
+        district=data['district'],
+        street=data['street'],
         number_street=data['number_street'],
         complement=data['complement'],
         landmark=data['landmark']
