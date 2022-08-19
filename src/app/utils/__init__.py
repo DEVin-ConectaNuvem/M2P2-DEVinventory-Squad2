@@ -15,3 +15,4 @@ def allkeys_in(request_json, keys_list):
 def generate_jwt(payload):
     token = encode(payload, current_app.config['SECRET_KEY'], 'HS256')
     return token
+
