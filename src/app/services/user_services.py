@@ -12,11 +12,12 @@ def make_login(email, password):
 
         if not user_query.check_password(password):
             return {"error": "Dados inválidos", "status_code": 401}
-        
+
         payload = {
             "name": user['name'],
-            "email": user['email'],
-            "exp": datetime.utcnow() + timedelta(days=1)
+            "user_id": user_query.id,
+            "exp": datetime.utcnow() + timedelta(days=1),
+            "roles": user["role_id"]
         }
 
         token = generate_jwt(payload)
