@@ -44,7 +44,7 @@ def requires_access_level(permissions):
                     "Você não tem permissão para essa funcionalidade"
                 }), 403
 
-            return function_current(current_user=current_user, *args, **kwargs)
+            return function_current(*args, **kwargs)
 
         return wrapper
 
