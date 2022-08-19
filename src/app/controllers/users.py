@@ -41,10 +41,10 @@ def list_user_per_page(users):
     return jsonify(list_users_dict), 200
 
 @user.route("/create", methods = ['POST'])
-@requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
+# @requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
 def post_create_users():
     
-    list_keys = ['gender', 'city', 'role', 'name', 'age', 'email',\
+    list_keys = ['gender_id', 'city_id', 'role_id', 'name', 'age', 'email',\
         'phone', 'password', 'cep', 'district', \
         'street', 'number_street']
 
@@ -53,24 +53,9 @@ def post_create_users():
     if "error" in data:
         return jsonify(data), 400
 
-    get_gender = Gender.query.filter(Gender.description.ilike(f"%{data['gender']}%")).first()
-    get_city = City.query.filter(City.name.ilike(f"%{data['city']}")).all()
-    get_role = Role.query.filter(Role.name.ilike(f"%{data['role']}%")).first()
-
-    if type(get_gender) == NoneType:
-        return jsonify({"error": "Genêro não existe no banco de dados."}), 404
-
-    if get_city == []:
-        return jsonify({"error": "Cidade não encontrada no banco de dados."}), 404
-
-    if len(get_city) > 1:
-        return jsonify({"error": "Por favor, específique o nome de sua Cidade."}), 400
-
-    if type(get_role) == NoneType:
-        return jsonify({"error": "Role não encontrada no banco de dados."}), 404
-
-    if type(data['age']) == int or type(data['age']) == float:
-        return jsonify({"error": "Digite sua data de nascimento completa."}), 400
+    get_gender = Gender.query.filter(Gender.id==data['gender_id']).first_or_404()
+    get_city = City.query.filter(City.id==data['city_id']).first_or_404()
+    get_role = Role.query.filter(Role.id==data['role_id']).first_or_404()
 
     if 'complement' not in data:
         data['complement'] = None
@@ -80,7 +65,7 @@ def post_create_users():
     
     response = create_user(
         gender_id=get_gender.id,
-        city_id=get_city[0].id,
+        city_id=get_city.id,
         role_id=get_role.id,
         name=data['name'],
         age=data['age'],
