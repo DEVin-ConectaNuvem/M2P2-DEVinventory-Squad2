@@ -117,13 +117,44 @@ poetry run flask populate_db
 1.
 2.
 3.
-4.
+4. `[POST]/user/create (users)`
 5.
 6.
 7.
 8.
 9.
 10. `[GET]/inventory/results (inventories)`
+
+## Regras de negócio ENDPOINT 4:
+
+- O usuário deve estar logado e possuir autorização (READ, WRITE, UPDATE e DELETE) para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Se estiver faltando algum dos campos obrigatórios, retornar uma mensagem de erro com o Status 400.
+- Se o e-mail que for enviado já existir no banco de dados, retornar um erro informando que não é possível cadastrar o usuário, utilizando o status 400.
+- O password deve ser criptografado no banco de dados, a regra deve ser feita no respectivo models.
+- O password deve conter 8 dígitos e pelo menos um caracter especial.
+- O telefone deve conter 11 dígitos e não pode conter nenhuma letra ou caracter especial.
+- Ao criar o usuário, deve-se retornar o Status 201 (Created)
+
+## Body parameter
+
+```json
+{
+  city_id (obrigatório),
+  gender_id (obrigatório),
+  role_id (obrigatório),
+  name (obrigatório),
+  age (obrigatório),
+  email (obrigatório),
+  phone (obrigatório),
+  password (obrigatório),
+  cep (obrigatório),
+  street (obrigatório),
+  number_street (obrigatório),
+  district (obrigatório),
+  complement (opcional),
+  landmark (opcional)
+}
+```
 
 <p align="left">
 Regras de negócio:
@@ -135,6 +166,8 @@ Regras de negócio:
 - Calcular o valor da soma de todos os preços dos itens.
 - Calcular quantos itens estão emprestados para usuários.
 - Retornar às estatísticas, além do Status 200 (OK).
+
+
 
 ## Tecnologias utilizadas
 
