@@ -1,4 +1,3 @@
-from types import NoneType
 from flask import Blueprint, jsonify, request
 from flask import json
 from flask.wrappers import Response
@@ -7,7 +6,7 @@ from src.app.services.user_services import make_login
 from src.app.services.user_services import create_user
 from src.app.utils import allkeys_in
 from src.app.middlewares.auth import requires_access_level
-from src.app.models.user import User, users_roles_share_schema, users_share_schema
+from src.app.models.user import User, users_roles_share_schema
 from src.app.models.city import City
 from src.app.models.gender import Gender
 from src.app.models.role import Role
@@ -20,6 +19,7 @@ user = Blueprint('user', __name__, url_prefix='/user')
 @user.route("/", defaults={"users": 1})
 @user.route("/<int:users>", methods=['GET'])
 @user.route("/<string:users>", methods=['GET'])
+@requires_access_level(['READ'])
 def list_user_per_page(users):
     if type(users) == str:
 
@@ -43,11 +43,13 @@ def list_user_per_page(users):
 
 
 @user.route("/<int:users>", methods = ['PATCH'])
-def atualiza_user(users):
+@requires_access_level(['UPDATE'])
+@validate_body(user_schemas.UpdateUserBodySchema())
+def atualiza_user(users, body):
 
         usuario_objeto = User.query.filter_by(id=users).first()
-        body = request.get_json()
-            
+        
+           
         if body['age'] !='' and usuario_objeto:
             usuario_objeto.age = body['age']
         if body['city_id'] !='' and usuario_objeto:
@@ -79,41 +81,39 @@ def atualiza_user(users):
         if  body['role_id'] !='' and usuario_objeto:
             usuario_objeto.role_id = body['role_id']
         
-        
-        new_user = User(body['gender_id'],body['role_id'],body['city_id'],body['name'],body['age'],body['email'],body['password'],body['phone'],body['cep'],body['street'],body['number_street'],body['complement'],body['landmark'],body['district'])
-        print(new_user)
-            
+              
       
         if usuario_objeto:    
            db.session.add(usuario_objeto) 
            db.session.commit()
-           return jsonify('Sucesso'), 20
+           return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
 
         
-        return "Não encontrado", 404
+        return jsonify({"error": "Usuário não encontrado."}), 404
     
 
 @user.route("/create", methods=['POST'])
+@requires_access_level(['READ', 'WRITE', 'UPDATE', 'DELETE'])
 @validate_body(user_schemas.CreateUserBodySchema())
-def post_create_users(data):
+def post_create_users(body):
 
 
-    if not Gender.query.filter(Gender.id==data['gender_id']).first():
+    if not Gender.query.filter(Gender.id==body['gender_id']).first():
         return jsonify({'error': 'Gênero não existente.'}), 404
 
-    if not City.query.filter(City.id==data['city_id']).first():
+    if not City.query.filter(City.id==body['city_id']).first():
         return jsonify({'error': 'Cidade não existente.'}), 404
 
-    if not Role.query.filter(Role.id==data['role_id']).first():
+    if not Role.query.filter(Role.id==body['role_id']).first():
         return jsonify({'error': 'Cargo não existente.'}), 404
 
-    if 'complement' not in data:
-        data['complement'] = None
+    if 'complement' not in body:
+        body['complement'] = None
 
-    if 'landmark' not in data:
-        data['landmark'] = None
+    if 'landmark' not in body:
+        body['landmark'] = None
 
-    response = create_user(**data)
+    response = create_user(**body)
 
     if "error" in response:
         return jsonify(response), 400
