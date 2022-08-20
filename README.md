@@ -143,6 +143,17 @@ poetry run flask populate_db
 }
 ```
 
+## Regras de negócio ENDPOINT 2:
+
+- O usuário deve estar desconectado para este endpoint de usuário.
+- Utilizar a configuração do OAuth2 previamente configurada.
+- Caso, todas as informações estejam corretas, retornar a url do redirecionamento da aplicação utilizando o código 200.
+
+## Regras de negócio ENDPOINT 3:
+
+- Verificar se o e-mail recebido está cadastrado no banco de dados, se não estiver deve cadastrar.
+- Realizar o redirecionamento após validar os valores enviados da url e do client do backend.
+
 ## Regras de negócio ENDPOINT 5:
 
 - O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
