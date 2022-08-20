@@ -33,8 +33,35 @@ class CreateUserBodySchema(Schema):
     street = fields.Str(required=True, error_messages=handle_error_messages('street'))
     number_street = fields.Str(required=True, error_messages=handle_error_messages('number_street'))
     district = fields.Str(required=True, error_messages=handle_error_messages('district'))
-    complement = fields.Str(required=True, error_messages=handle_error_messages('complement'))
-    landmark = fields.Str(required=True, error_messages=handle_error_messages('landmark'))
+    complement = fields.Str()
+    landmark = fields.Str()
+
+    @validates('password')
+    def validate(self, password):
+        validate_password(password)
+
+    @validates('phone')
+    def validate_phone(self, phone):
+        regex = re.compile(r"^\([1-9]{2}\) (?:[2-8]|9[1-9])[0-9]{3}-[0-9]{4}$")
+        if not re.fullmatch(regex, phone):
+            raise ValidationError('O telefone deve estar no formato: (xx) xxxxx-xxxx')
+
+
+class UpdateUserBodySchema(Schema):
+    city_id = fields.Integer()
+    gender_id = fields.Integer()
+    role_id = fields.Integer()
+    name = fields.Str(required=True, error_messages=handle_error_messages('name'))
+    age = fields.DateTime()
+    email = fields.Email(required=True, error_messages=handle_error_messages('email'))
+    phone = fields.Str()
+    password = fields.Str(required=True, error_messages=handle_error_messages('password'))
+    cep = fields.Str()
+    street = fields.Str()
+    number_street = fields.Str()
+    district = fields.Str()
+    complement = fields.Str()
+    landmark = fields.Str()
 
     @validates('password')
     def validate(self, password):
