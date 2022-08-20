@@ -119,7 +119,7 @@ poetry run flask populate_db
 3.
 4. `[POST]/user/create (users)`
 5. `[GET]/user/<int:users> ou <string:users> (users)`
-6.
+6. `[PATCH]/user/<int:users> (users)`
 7. `[POST]/inventory (inventories)`
 8.
 9.
@@ -134,6 +134,18 @@ poetry run flask populate_db
 - Em caso de não ser enviado nenhum queryParam, deve-se retornar todos os usuários de acordo com a paginação.
 - Caso não seja encontrado nenhum resultado, deve-se retornar o Status 204 (No Content).
 - Caso seja encontrado ao menos um resultado, deve-se retornar um JSON contendo o id, o name, o email, o phone, e o role.name dos usuários, além do Status 200 (OK).
+
+## Regras de negócio ENDPOINT 6:
+
+- O usuário deve estar logado e possuir autorização UPDATE para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Ter validação caso não encontrar o id enviado e retornar status 404.
+- Os campos preenchidos não podem ser alterados para campos vazios ou que não respeitem as validações da models (users).
+- Caso seja alterado deve-se retornar o Status 204 (No Content).
+
+## Query Param (obrigatório)
+
+`EXAMPLE: http:127.0.0.1:5000/user/5` Para atualizar usuário com id 5, 
+caso não exista a página irá retornar NOT FOUND 404
 
 ## Query Param (não obrigatório)
 

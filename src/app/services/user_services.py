@@ -56,8 +56,19 @@ def make_login(email, password):
         return {"error": "Ops! Algo deu errado...", "status_code": 500}
 
 
+
 def get_by_id(id):
     user = User.query.filter(User.id==id).first()
     
     
     return user_share_schema.dump(user)
+
+def get_user_by_email(email):
+    try:
+        user_query = User.query.filter_by(email = email).first_or_404()
+        user_dict = user_share_schema.dump(user_query)
+        return { "id": user_dict['id'], "role": user_dict["role_id"] }
+
+    except:
+        return { "error": "Ops! Algo deu errado...", "status_code": 500 }
+

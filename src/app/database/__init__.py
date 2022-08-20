@@ -12,6 +12,7 @@ from src.app.models.role import Role
 from src.app.models.user import User
 from src.app.models.product_category import ProductCategory
 from src.app.models.inventory import Inventory
+from src.app.utils import gera_password
 
 
 def read_json():
@@ -22,21 +23,6 @@ def read_json():
 
     except:
         return None
-
-
-def gera_password(): 
-    letras = "abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ123456789"
-    caracter = '!@#$%&^*-_'
-
-    password = ""
-
-    for i in range(0, 1):
-        password_caracter = random.choice(caracter)
-        password += password_caracter
-        for h in range(0, 14):
-            password_letras = random.choice(letras)
-            password += password_letras
-    return password
 
 
 def populate_db():

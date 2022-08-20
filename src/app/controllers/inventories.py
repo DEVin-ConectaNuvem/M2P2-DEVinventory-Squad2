@@ -44,6 +44,11 @@ def create():
     data = allkeys_in(request.get_json(), list_keys)
     if 'error' in data:
         return {"error": data}, 401
+   
+    
+    inv_query = Inventory.query.all()
+    inventory = intentories_share_schema.dump(inv_query)
+    
 
     if exist_product_code(data, inventory):
         return jsonify({"error": "Esse código de produto já existe"}), 400

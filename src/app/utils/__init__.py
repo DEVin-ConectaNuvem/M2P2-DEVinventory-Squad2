@@ -1,5 +1,7 @@
 from flask import current_app
 from jwt import encode
+import random
+
 
 def allkeys_in(request_json, keys_list):
     missing_keys = []
@@ -12,9 +14,25 @@ def allkeys_in(request_json, keys_list):
 
     return request_json
 
+
 def generate_jwt(payload):
     token = encode(payload, current_app.config['SECRET_KEY'], 'HS256')
     return token
+
+
+def gera_password(): 
+    letras = "abcdefghijklmnopqrstuvwxyzABCEFGHIJKLMNOPQRSTUVWXYZ123456789"
+    caracter = '!@#$%&^*-_'
+
+    password = ""
+
+    for i in range(0, 1):
+        password_caracter = random.choice(caracter)
+        password += password_caracter
+        for h in range(0, 14):
+            password_letras = random.choice(letras)
+            password += password_letras
+    return password
 
 def exist_product_code(request_json, data_in_db):
   
