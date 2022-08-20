@@ -42,7 +42,7 @@ def list_all_requirements():
 @requires_access_level("WRITE")
 def create():
     
-    list_keys = ["product_category", "product_code", "title", "value", "brand", "template", "description"]
+    list_keys = ["product_category_id", "product_code", "title", "value", "brand", "template", "description"]
     
     data = allkeys_in(request.get_json(), list_keys)
     if 'error' in data:
@@ -53,10 +53,11 @@ def create():
     
     if data["value"] <= 0:
         return jsonify({"error": "O valor não pode ser menor ou igual a zero"}), 400
+    
     if "user_id" not in data.keys():
         data['user_id'] = None
     
-    prod_cat_query = ProductCategory.query.filter_by(description=data['product_category']).first_or_404()
+    prod_cat_query = ProductCategory.query.filter_by(description=data['product_category_id']).first_or_404()
     prod_cat_dict = product_share_schema.dump(prod_cat_query)
         
     response = create_product(
