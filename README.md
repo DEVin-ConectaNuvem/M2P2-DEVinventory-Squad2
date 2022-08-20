@@ -120,7 +120,7 @@ poetry run flask populate_db
 4. `[POST]/user/create (users)`
 5. `[GET]/user/<int:users> ou <string:users> (users)`
 6.
-7.
+7. `[POST]/inventory (inventories)`
 8.
 9.
 10. `[GET]/inventory/results (inventories)`
@@ -173,6 +173,29 @@ Se não, irá dar NO CONTENT 204
   district (obrigatório),
   complement (opcional),
   landmark (opcional)
+}
+```
+
+## Regras de negócio ENDPOINT 7:
+
+- O usuário deve estar logado e possuir autorização WRITE para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Se estiver faltando algum dos campos obrigatórios, retornar uma mensagem de erro com o Status 400.
+- Se o product_code que for enviado já existir no banco de dados, retornar um erro informando que não é possível criar um novo produto no inventário, utilizando o status 400.
+- O value não pode ser menor ou igual a zero.
+- Ao criar o item, deve-se retornar o Status 201 (Created).
+
+## Body parameter
+
+```json
+{
+    product_category_id (obrigatório), 
+    user_id  (opcional), 
+    product_code (obrigatório), 
+    title  (obrigatório), 
+    value  (obrigatório), 
+    brand  (obrigatório), 
+    template  (obrigatório), 
+    description  (obrigatório)
 }
 ```
 
