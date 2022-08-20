@@ -137,24 +137,24 @@ def callback():
 
     user = get_user_by_email(user_google_dict['email'])
 
-    password = gera_password()
+    password_gerado = gera_password()
 
     if "error" in user:
         user = create_user(
-        None,
-        None,
-        3,
-        user_google_dict['name'],
-        None,
-        user_google_dict['email'],
-        None,
-        password,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None
+            gender_id=None, 
+            city_id=None,
+            role_id=3, 
+            name=user_google_dict['name'], 
+            age=None, 
+            email=user_google_dict['email'],
+            phone=None, 
+            password=password_gerado, 
+            cep=None,
+            district=None, 
+            street=None, 
+            number_street=None,
+            complement=None,
+            landmark=None
         )
         user = get_user_by_email(user_google_dict['email'])
 
@@ -167,7 +167,5 @@ def callback():
     del user_google_dict['azp']
 
     token = generate_jwt(user_google_dict)
-
-    print(f"O token gerado foi: {token}")
 
     return redirect(f"{current_app.config['FRONTEND_URL']}?jwt={token}")
