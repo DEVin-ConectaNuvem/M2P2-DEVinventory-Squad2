@@ -16,3 +16,11 @@ def generate_jwt(payload):
     token = encode(payload, current_app.config['SECRET_KEY'], 'HS256')
     return token
 
+def exist_product_code(request_json, data_in_db):
+  
+  for json in data_in_db:
+    if json['product_code'] == request_json['product_code']:
+      return True
+
+  return False
+
