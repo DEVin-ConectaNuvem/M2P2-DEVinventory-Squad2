@@ -1,8 +1,9 @@
+import requests
 from types import NoneType
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from flask import json
 from flask.wrappers import Response
-from src.app.services.user_services import make_login, create_user
+from src.app.services.user_services import make_login, create_user, get_user_by_email
 from src.app.utils import allkeys_in, generate_jwt
 from src.app.middlewares.auth import requires_access_level
 from src.app.models.user import User, users_roles_share_schema
@@ -15,18 +16,18 @@ from flask.globals import session
 from google_auth_oauthlib.flow import Flow
 from google import auth 
 from google.oauth2 import id_token 
-
+from src.app.utils import gera_password
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
 flow = Flow.from_client_secrets_file(
-  client_secrets_file="src/app/database/client_secret.json",
-  scopes=[
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "openid"
-  ],
-  redirect_uri = "http://localhost:5000/user/callback"
+    client_secrets_file="src/app/database/client_secret.json",
+    scopes=[
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
+    ],
+    redirect_uri = "http://localhost:5000/user/callback"
 )
 
 @user.route("/", defaults = {"users": 1})
@@ -151,3 +152,53 @@ def auth_google():
         status=200,
         mimetype='application/json'
     )  
+
+@user.route('/callback', methods = ["GET"])
+def callback():
+    flow.fetch_token(authorization_response = request.url)
+    credentials = flow.credentials
+    request_session = requests.session()
+    token_google = auth.transport.requests.Request(session=request_session)
+
+    user_google_dict = id_token.verify_oauth2_token(
+        id_token = credentials.id_token,
+        request=token_google,
+        audience=current_app.config['GOOGLE_CLIENT_ID']
+    )
+
+    user = get_user_by_email(user_google_dict['email'])
+
+    password = gera_password()
+
+    if "error" in user:
+        user = create_user(
+        None,
+        None,
+        3,
+        user_google_dict['name'],
+        None,
+        user_google_dict['email'],
+        None,
+        password,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None
+        )
+        user = get_user_by_email(user_google_dict['email'])
+
+    user_google_dict["user_id"] = user['id']
+    user_google_dict["role"] = user['role']
+
+    session["google_id"] = user_google_dict.get("sub")
+
+    del user_google_dict['aud']
+    del user_google_dict['azp']
+
+    token = generate_jwt(user_google_dict)
+
+    print(f"O token gerado foi: {token}")
+
+    return redirect(f"{current_app.config['FRONTEND_URL']}?jwt={token}")
