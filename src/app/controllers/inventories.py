@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, request
 
 from src.app.middlewares.auth import requires_access_level
 from src.app.models.inventory import Inventory, intentories_share_schema
-from src.app.models.product_category import ProductCategory, product_share_schema
 from src.app.models.user import User
 from src.app.services.inventory_services import create_product
 from src.app.utils import allkeys_in, exist_product_code 
@@ -56,12 +55,9 @@ def create():
     
     if "user_id" not in data.keys():
         data['user_id'] = None
-    
-    prod_cat_query = ProductCategory.query.filter_by(description=data['product_category_id']).first_or_404()
-    prod_cat_dict = product_share_schema.dump(prod_cat_query)
         
     response = create_product(
-        product_category_id = prod_cat_dict["id"],
+        product_category_id = data["product_category_id"],
         user_id = data["user_id"],
         product_code = data["product_code"],
         title = data["title"], 
