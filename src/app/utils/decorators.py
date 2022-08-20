@@ -12,7 +12,7 @@ def validate_body(schema: Schema):
             try:
                 load_schema = schema.load(body)
 
-                return function_current(body=load_schema, *args, **kwargs)
+                return function_current(load_schema, *args, **kwargs)
 
             except ValidationError as error:
                 return jsonify(error.messages), 400
