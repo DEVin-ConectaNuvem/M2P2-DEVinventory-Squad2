@@ -53,5 +53,5 @@ class InventorySchema(ma.Schema):
         fields = ('id', 'product_category_id', 'user_id', 'title', 'product_code', 'value', 'brand', 'template', 'description')
 
 
-intentory_share_schema = InventorySchema()
-intentories_share_schema = InventorySchema(many = True)
+inventory_share_schema = InventorySchema()
+inventories_share_schema = InventorySchema(many = True)
