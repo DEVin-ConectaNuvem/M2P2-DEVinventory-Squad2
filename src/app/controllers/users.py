@@ -143,7 +143,7 @@ def user_login():
     check_keys = allkeys_in(data, keys_list)
 
     if 'error' in check_keys:
-        return {"error": check_keys}, 401
+        return {"error": check_keys}, 400
 
     response = make_login(data['email'], data['password'])
 

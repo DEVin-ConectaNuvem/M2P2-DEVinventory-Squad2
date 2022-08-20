@@ -35,8 +35,11 @@ def create_user(gender_id, city_id, role_id, name, age, email,\
 def make_login(email, password):
 
     try:
-
-        user_query = User.query.filter_by(email = email).first_or_404()
+        try:
+            user_query = User.query.filter_by(email = email).first_or_404()
+        except:
+            return {"error": "Dados inválidos", "status_code": 401}
+        
         user = user_share_schema.dump(user_query)
 
         if not user_query.check_password(password):
