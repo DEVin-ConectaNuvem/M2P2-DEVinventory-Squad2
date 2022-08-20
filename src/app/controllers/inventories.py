@@ -53,8 +53,8 @@ def create():
     
     if data["value"] <= 0:
         return jsonify({"error": "O valor não pode ser menor ou igual a zero"}), 400
-    if user_id not in data.keys():
-        user_id = None
+    if "user_id" not in data.keys():
+        data['user_id'] = None
     
     prod_cat_query = ProductCategory.query.filter_by(description=data['product_category']).first_or_404()
     prod_cat_dict = product_share_schema.dump(prod_cat_query)
