@@ -143,11 +143,11 @@ def user_login():
 
 @user.route('/auth/google', methods = ["POST"])
 def auth_google():
-  authorization_url, state = flow.authorization_url()
-  session["state"] = state
+    authorization_url, state = flow.authorization_url()
+    session["state"] = state
 
-  return Response(
-      response=json.dumps({'url':authorization_url}),
-      status=200,
-      mimetype='application/json'
-  )
+    return Response(
+        response=json.dumps({'url':authorization_url}),
+        status=200,
+        mimetype='application/json'
+    )  
