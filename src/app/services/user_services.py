@@ -55,3 +55,9 @@ def make_login(email, password):
     except:
         return {"error": "Ops! Algo deu errado...", "status_code": 500}
 
+
+def get_by_id(id):
+    user = User.query.filter(User.id==id).first()
+    
+    
+    return user_share_schema.dump(user)
