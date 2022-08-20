@@ -114,7 +114,7 @@ poetry run flask populate_db
 `OBS`: Caso precise, pode utilizar o comando **_poetry run flask drop_all_tables_** para retirar todas as tabelas do banco e recomeçar novamente (não sendo necessário o comando 'poetry run flask db init'). 
 
 ## Endpoints
-1.
+1. `[POST]/user/login (users)`
 2.
 3.
 4. `[POST]/user/create (users)`
@@ -125,6 +125,23 @@ poetry run flask populate_db
 9.
 10. `[GET]/inventory/results (inventories)`
 
+## Regras de negócio ENDPOINT 1:
+
+- o body da requisição deve conter obrigatoriamente as chaves email e password;
+- o usuário deve estar desconectado para este endpoint de usuário;
+- se estiver faltando algum dos campos obrigatórios, será retornada uma mensagem de erro com o Status 400;
+- se o e-mail que for enviado não existir no banco de dados, será retornado um erro informando que não foi possível efetuar o login, utilizando o status 401;
+- se a senha estiver errada, será retornado um erro informando que não foi possível efetuar o login, utilizando o status 401;
+- Caso, todas as informações estejam corretas, será retornado o token da aplicação utilizando o código 200.
+
+### Body parameters
+
+```json
+{
+  email (obrigatório),
+  password (obrigatório)
+}
+```
 
 ## Regras de negócio ENDPOINT 5:
 
