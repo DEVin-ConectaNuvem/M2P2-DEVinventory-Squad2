@@ -1,4 +1,6 @@
-<h1 align="center"> DEVinventory </h1>
+<h2 align="center">Projeto DEVinventory</h1>
+
+![logo_size_invert(1)](https://user-images.githubusercontent.com/101053966/185764651-39c3e59e-c945-405f-90f0-792ba5cad5bb.jpg)
 
 ## Empresa
 
@@ -11,8 +13,9 @@
 - [Funcionalidades](#funcionalidades)
 - [Como executar](#como-executar)
 - [Endpoints](#endpoints)
-- [Desenvolvedores](#desenvolvedores)
 - [Tecnologias utilizadas](#tecnologias-utilizadas)
+- [Agradecimentos](#agradecimentos)
+- [Desenvolvedores](#desenvolvedores)
 
 ## Descrição do projeto
 <p align="justify">
@@ -114,18 +117,18 @@ poetry run flask populate_db
 `OBS`: Caso precise, pode utilizar o comando **_poetry run flask drop_all_tables_** para retirar todas as tabelas do banco e recomeçar novamente (não sendo necessário o comando 'poetry run flask db init'). 
 
 ## Endpoints
-1. `[POST]/user/login (users)`
-2.
-3.
-4. `[POST]/user/create (users)`
-5. `[GET]/user/<int:users> ou <string:users> (users)`
-6. `[PATCH]/user/<int:users> (users)`
-7. `[POST]/inventory (inventories)`
+1. `[POST] /user/login (users)` - [Regras endpoint 1](#regras-endpoint-1)
+2. `[POST] /auth/google (users)` - [Regras endpoint 2](#regras-endpoint-2)
+3. `[GET] /callback (users)` - [Regras endpoint 3](#regras-endpoint-3)
+4. `[POST] /user/create (users)` - [Regras endpoint 4](#regras-endpoint-4)
+5. `[GET] /user/<int:users> ou <string:users> (users)` - [Regras endpoint 10](#regras-endpoint-5)
+6. `[PATCH] /user/<int:users> (users)` - [Regras endpoint 6](#regras-endpoint-6)
+7. `[POST] /inventory (inventories)` - [Regras endpoint 7](#regras-endpoint-7)
 8.
 9.
-10. `[GET]/inventory/results (inventories)`
+10. `[GET] /inventory/results (inventories)` - [Regras endpoint 10](#regras-endpoint-10)
 
-## Regras de negócio ENDPOINT 1:
+### Regras ENDPOINT 1:
 
 - o body da requisição deve conter obrigatoriamente as chaves email e password;
 - o usuário deve estar desconectado para este endpoint de usuário;
@@ -134,27 +137,27 @@ poetry run flask populate_db
 - se a senha estiver errada, será retornado um erro informando que não foi possível efetuar o login, utilizando o status 401;
 - Caso, todas as informações estejam corretas, será retornado o token da aplicação utilizando o código 200.
 
-### Body parameters
+#### Body parameters
 
-```json
+```js
 {
   email (obrigatório),
   password (obrigatório)
 }
 ```
 
-## Regras de negócio ENDPOINT 2:
+### Regras ENDPOINT 2:
 
 - O usuário deve estar desconectado para este endpoint de usuário.
 - Utilizar a configuração do OAuth2 previamente configurada.
-- Caso, todas as informações estejam corretas, retornar a url do redirecionamento da aplicação utilizando o código 200.
+- Caso, todas as informações estejam corretas, irá retornar a url do redirecionamento da aplicação utilizando o código 200.
 
-## Regras de negócio ENDPOINT 3:
+### Regras ENDPOINT 3:
 
 - Verificar se o e-mail recebido está cadastrado no banco de dados, se não estiver deve cadastrar.
 - Realizar o redirecionamento após validar os valores enviados da url e do client do backend.
 
-## Regras de negócio ENDPOINT 5:
+### Regras ENDPOINT 5:
 
 - O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Deve-se retornar os usuários que contenham o nome (name) enviado (usar o Like).
@@ -163,19 +166,19 @@ poetry run flask populate_db
 - Caso não seja encontrado nenhum resultado, deve-se retornar o Status 204 (No Content).
 - Caso seja encontrado ao menos um resultado, deve-se retornar um JSON contendo o id, o name, o email, o phone, e o role.name dos usuários, além do Status 200 (OK).
 
-## Regras de negócio ENDPOINT 6:
+### Regras ENDPOINT 6:
 
 - O usuário deve estar logado e possuir autorização UPDATE para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Ter validação caso não encontrar o id enviado e retornar status 404.
 - Os campos preenchidos não podem ser alterados para campos vazios ou que não respeitem as validações da models (users).
 - Caso seja alterado deve-se retornar o Status 204 (No Content).
 
-## Query Param (obrigatório)
+#### Query Param (obrigatório)
 
 `EXAMPLE: http:127.0.0.1:5000/user/5` Para atualizar usuário com id 5, 
 caso não exista a página irá retornar NOT FOUND 404
 
-## Query Param (não obrigatório)
+#### Query Param (não obrigatório)
 
 `EXAMPLE: http:127.0.0.1:5000/user/1` Para ver a página 1 que irá retornar 20 por página, 
 caso não exista a página irá retornar NOT FOUND 404
@@ -185,7 +188,7 @@ Se não, irá dar NO CONTENT 204
 
 `EXAMPLE: http:127.0.0.1:5000/user` Irá te levar para a página 1 caso você não envie nada, mostrará uma lista de 20 usuários.
 
-## Regras de negócio ENDPOINT 4:
+### Regras ENDPOINT 4:
 
 - O usuário deve estar logado e possuir autorização (READ, WRITE, UPDATE e DELETE) para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Se estiver faltando algum dos campos obrigatórios, retornar uma mensagem de erro com o Status 400.
@@ -195,9 +198,9 @@ Se não, irá dar NO CONTENT 204
 - O telefone deve conter 11 dígitos e não pode conter nenhuma letra ou caracter especial.
 - Ao criar o usuário, deve-se retornar o Status 201 (Created)
 
-## Body parameter
+#### Body parameter
 
-```json
+```js
 {
   city_id (obrigatório),
   gender_id (obrigatório),
@@ -216,7 +219,7 @@ Se não, irá dar NO CONTENT 204
 }
 ```
 
-## Regras de negócio ENDPOINT 7:
+### Regras ENDPOINT 7:
 
 - O usuário deve estar logado e possuir autorização WRITE para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Se estiver faltando algum dos campos obrigatórios, retornar uma mensagem de erro com o Status 400.
@@ -224,9 +227,9 @@ Se não, irá dar NO CONTENT 204
 - O value não pode ser menor ou igual a zero.
 - Ao criar o item, deve-se retornar o Status 201 (Created).
 
-## Body parameter
+#### Body parameter
 
-```json
+```js
 {
     product_category_id (obrigatório), 
     user_id  (opcional), 
@@ -239,9 +242,7 @@ Se não, irá dar NO CONTENT 204
 }
 ```
 
-<p align="left">
-Regras de negócio:
-</p>
+### Regras ENDPOINT 10
 
 - O usuário deve estar logado e possuir autorização READ para este endpoint de inventário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
 - Calcular o número de usuários cadastrados no sistema.
@@ -249,8 +250,6 @@ Regras de negócio:
 - Calcular o valor da soma de todos os preços dos itens.
 - Calcular quantos itens estão emprestados para usuários.
 - Retornar às estatísticas, além do Status 200 (OK).
-
-
 
 ## Tecnologias utilizadas
 
@@ -269,6 +268,15 @@ Regras de negócio:
 </a> 
 <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> 
 </a> 
+</p>
+
+## Agradecimentos
+
+<p align="justify">
+ Agradecemos a toda a equipe DEVinHouse, SENAI e LAB365 pela oportunidade e os desafios propostos durante o curso.
+</p>
+<p align="justify">
+ Um agradecimento especial para o nosso professor, criador da proposta do projeto e Product Owner do squad <a href="https://github.com/pedrohbsilva" target="_blank" rel="noreferrer">Pedro Henrique B. da Silva</a>, pelas aulas sobre banco de dados, as orientações durante o desenvolvimento do projeto e vínculo de amizade criado.  
 </p>
 
 ## Desenvolvedores
