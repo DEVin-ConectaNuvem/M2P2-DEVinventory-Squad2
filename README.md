@@ -248,9 +248,23 @@ Se não, irá dar NO CONTENT 204
 - Deve respeitar as validações anteriores, endpoint de POST.
 - Ao atualizar o item, deve-se retornar o Status 204 (No Content).
 
-### Entradas
+#### Entradas
+
 - id: integer (Path param required)
 - quaisquer campos (Body param não required)
+
+### Regras ENDPOINT 9:
+
+Entrada:
+name: string (Query param não obrigatório)
+
+- O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
+- Deve-se retornar todos os itens que contenham o nome (title).
+- O endpoint deve ser paginado, retornando 20 itens por página.
+- Obs: em caso de não ser enviado nenhum queryParam, deve-se retornar todos os itens de acordo com a paginação.
+- Caso o user_id seja null, retornar o nome do usuário como {id: None, name: “Na Empresa”}.
+- Caso não seja encontrado nenhum resultado, deve-se retornar o Status 204 (No Content).
+- Caso seja encontrado ao menos um resultado, deve-se retornar um JSON contendo o id, o product_code, o title, o product_category, user, além do Status 200 (OK).
 
 
 ### Regras ENDPOINT 10
