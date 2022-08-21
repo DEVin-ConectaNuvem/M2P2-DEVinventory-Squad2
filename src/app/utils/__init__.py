@@ -1,18 +1,9 @@
 from flask import current_app
 from jwt import encode
+from google_auth_oauthlib.flow import Flow
 import random
 
-
-def allkeys_in(request_json, keys_list):
-    missing_keys = []
-    for key in range(len(keys_list)):
-        if keys_list[key] not in request_json:
-            missing_keys.append(keys_list[key])
-            
-    if len(missing_keys) > 0:
-        return {"error": f"Está faltando o(s) item(s) {missing_keys}"}
-
-    return request_json
+from src.app.models.inventory import Inventory
 
 
 def generate_jwt(payload):
@@ -34,11 +25,18 @@ def gera_password():
             password += password_letras
     return password
 
-def exist_product_code(request_json, data_in_db):
-  
-  for json in data_in_db:
-    if json['product_code'] == request_json['product_code']:
-      return True
+def exist_product_code(body):
+    if Inventory.query.filter_by(product_code=body).first():
+        return True
+    return False
 
-  return False
 
+flow = Flow.from_client_secrets_file(
+    client_secrets_file="src/app/database/client_secret.json",
+    scopes=[
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
+    ],
+    redirect_uri = "http://localhost:5000/user/callback"
+)
