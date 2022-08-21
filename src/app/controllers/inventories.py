@@ -1,16 +1,18 @@
 from flask import Blueprint, jsonify, request
-from src.app.models.user import User
+
 from src.app.middlewares.auth import requires_access_level
-from src.app.models.inventory import Inventory, inventories_share_schema
 from src.app.services.inventory_services import create_product, get_all_inventories, get_inventories_by_name
-from src.app.utils import allkeys_in, exist_product_code
+from src.app.utils import exist_product_code
 from src.app.services.queries_services import queries
 from src.app.schemas.product_schema import ProductBodySchema
 from src.app.utils.decorators import validate_body
 
 
 inventory = Blueprint('inventory', __name__, url_prefix='/inventory')
+
+
 @inventory.route("/results", methods = ['GET'])
+@requires_access_level(["READ"])
 def list_all_requirements():
 
     users_db_data = queries(model='user', type_request='all')

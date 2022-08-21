@@ -1,3 +1,4 @@
+from src.app import db
 from src.app.models.city import City, cities_share_schema, city_share_schema
 from src.app.models.gender import Gender, gender_share_schema, genders_share_schema
 from src.app.models.inventory import Inventory, inventories_share_schema, inventory_share_schema
@@ -33,3 +34,7 @@ def queries(model, type_request, schema=None, filter_param=None):
         dict_query = options_schema[schema].dump(query_db_data)
         return dict_query
     return query_db_data
+
+
+def check_existence(model: db.Model, id):
+    return model.query.filter(model.id==id).first()

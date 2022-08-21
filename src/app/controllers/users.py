@@ -5,12 +5,12 @@ from sqlalchemy.exc import IntegrityError
 from flask.wrappers import Response
 from werkzeug.utils import redirect
 from flask.globals import session
-from google_auth_oauthlib.flow import Flow
+
 from google import auth 
 from google.oauth2 import id_token 
 from src.app import db
 from src.app.services.user_services import make_login, create_user, get_user_by_email
-from src.app.utils import allkeys_in, generate_jwt, gera_password
+from src.app.utils import generate_jwt, gera_password
 from src.app.middlewares.auth import requires_access_level
 from src.app.models.user import User
 from src.app.models.city import City
@@ -19,20 +19,11 @@ from src.app.models.role import Role
 from src.app.utils.decorators import validate_body
 from src.app.schemas import user_schemas
 from src.app.services.user_services import get_users_by_name, get_all_users
+from src.app.services.queries_services import check_existence
+from src.app.utils import flow
 
 
 user = Blueprint('user', __name__, url_prefix='/user')
-
-
-flow = Flow.from_client_secrets_file(
-    client_secrets_file="src/app/database/client_secret.json",
-    scopes=[
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "openid"
-    ],
-    redirect_uri = "http://localhost:5000/user/callback"
-)
 
 
 @user.route("/")
@@ -85,20 +76,14 @@ def update_user(id, body):
 @validate_body(user_schemas.CreateUserBodySchema())
 def post_create_users(body):
 
-    if not Gender.query.filter(Gender.id==body['gender_id']).first():
-        return jsonify({'error': 'Gênero não existente.'}), 404
+    models = [
+            {'model': Gender, 'id': body['gender_id']}, 
+            {'model': City,'id': body['city_id']},
+            {'model': Role, 'id':body['role_id']}
+        ]
 
-    if not City.query.filter(City.id==body['city_id']).first():
-        return jsonify({'error': 'Cidade não existente.'}), 404
-
-    if not Role.query.filter(Role.id==body['role_id']).first():
-        return jsonify({'error': 'Cargo não existente.'}), 404
-
-    if 'complement' not in body:
-        body['complement'] = None
-
-    if 'landmark' not in body:
-        body['landmark'] = None
+    if not all([check_existence(model['model'], model['id'])for model in models]):
+        return jsonify({'error': 'Algum dos IDs não foi encontrado.'}), 404
 
     response = create_user(**body)
 
@@ -109,16 +94,10 @@ def post_create_users(body):
 
 
 @user.route("/login", methods=['POST'])
-def user_login():
+@validate_body(user_schemas.LoginBodySchema())
+def user_login(body):
 
-    data = request.get_json()
-    keys_list = ['email', 'password']
-    check_keys = allkeys_in(data, keys_list)
-
-    if 'error' in check_keys:
-        return {"error": check_keys}, 400
-
-    response = make_login(data['email'], data['password'])
+    response = make_login(body['email'], body['password'])
 
     if "error" in response:
 
