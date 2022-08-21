@@ -3,9 +3,8 @@ from src.app.models.inventory import Inventory, inventories_share_schema
 from src.app.services import user_services
 
 
-def create_product(product_category_id, user_id,  product_code, title, value,brand, template, description):
+def create_product(product_category_id, product_code, title, value,brand, template, description, user_id=None):
     try:
-        
         Inventory.seed(
             product_category_id= product_category_id, 
             user_id = user_id,  
@@ -17,10 +16,10 @@ def create_product(product_category_id, user_id,  product_code, title, value,bra
             description = description
         )
         
-        return ('Item cadastrado com sucesso')
+        return ({'message': 'Item cadastrado com sucesso'})
     
     except:
-        return ('Erro ao cadastrar item')
+        return ({'error': 'Erro ao cadastrar item'})
 
 
 def generate_user_data(user_id):

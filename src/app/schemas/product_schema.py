@@ -10,6 +10,7 @@ class ProductBodySchema(Schema):
     brand = fields.Str(required=True, error_messages=handle_error_messages('brand'))
     template = fields.Str(required=True, error_messages=handle_error_messages('template'))
     description = fields.Str(required=True, error_messages=handle_error_messages('description'))
+    user_id = fields.Integer()
 
     @post_load()
     def change_decimal_places(self, data, **kwargs):
@@ -21,7 +22,3 @@ class ProductBodySchema(Schema):
     def validate_product_code(self, product_code):
         if product_code < 8:
             raise ValidationError('O código do produto não pode ser menor que 8.')
-
-
-schema = ProductBodySchema()
-print(schema.load({'product_code': 8}))

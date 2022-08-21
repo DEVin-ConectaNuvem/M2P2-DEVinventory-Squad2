@@ -22,15 +22,15 @@ from src.app.schemas import user_schemas
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
-flow = Flow.from_client_secrets_file(
-    client_secrets_file="src/app/database/client_secret.json",
-    scopes=[
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "openid"
-    ],
-    redirect_uri = "http://localhost:5000/user/callback"
-)
+# flow = Flow.from_client_secrets_file(
+#     client_secrets_file="src/app/database/client_secret.json",
+#     scopes=[
+#         "https://www.googleapis.com/auth/userinfo.email",
+#         "https://www.googleapis.com/auth/userinfo.profile",
+#         "openid"
+#     ],
+#     redirect_uri = "http://localhost:5000/user/callback"
+# )
 
 
 @user.route("/", defaults={"users": 1})
