@@ -23,18 +23,15 @@ class ProductBodySchema(Schema):
             raise ValidationError('O código do produto não pode ser menor que 8.')
 
 class UpdateProductBodySchema(Schema):
-    product_category_id = fields.Integer(required=True, error_messages=handle_error_messages('product_category_id'))
-    product_code = fields.Integer(required=True, error_messages=handle_error_messages('product_code'))
-    title = fields.Str()
-    value = fields.Float()
-    brand = fields.Str()
-    template = fields.Str()
-    description = fields.Str()
+    user_id = fields.Integer()
+    title = fields.Str(required=True, error_messages=handle_error_messages('title'))
+    value = fields.Float(required=True, error_messages=handle_error_messages('value'))
+    brand = fields.Str(required=True, error_messages=handle_error_messages('brand'))
+    template = fields.Str(required=True, error_messages=handle_error_messages('template'))
+    description = fields.Str(required=True, error_messages=handle_error_messages('description'))
     
-    @validates('product_code', 'product_category_id')
-    def validate_product(self, product_code, product_category_id):
-        if product_code or product_category_id:
-            raise ValidationError('Esse campo não pode ser alterado.')
-
-schema = ProductBodySchema()
-print(schema.load({'product_code': 8}))
+    @post_load
+    def validate_user_id(self, data, **kwargs):
+        if not data.get('user_id'):
+            data['user_id'] = None
+            return data

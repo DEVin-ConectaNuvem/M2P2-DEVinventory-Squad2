@@ -104,7 +104,7 @@ def get_inventories():
 
 @inventory.route("/<int:inventory>", methods = ["PATCH"])
 @requires_access_level(['UPDATE'])
-@validate_body(product_schema.ProductBodySchema())
+@validate_body(product_schema.UpdateProductBodySchema())
 def atualiza_item(inventory, body):
     
     list_keys = ["user_id", "title", "value", "brand", "template", "description"]
