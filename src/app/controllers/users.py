@@ -1,6 +1,7 @@
 import requests
 from flask import Blueprint, jsonify, request, current_app
 from flask import json
+from sqlalchemy.exc import IntegrityError
 from flask.wrappers import Response
 from werkzeug.utils import redirect
 from flask.globals import session
@@ -11,13 +12,13 @@ from src.app import db
 from src.app.services.user_services import make_login, create_user, get_user_by_email
 from src.app.utils import allkeys_in, generate_jwt, gera_password
 from src.app.middlewares.auth import requires_access_level
-from src.app.models.user import User, users_roles_share_schema
+from src.app.models.user import User
 from src.app.models.city import City
 from src.app.models.gender import Gender
 from src.app.models.role import Role
 from src.app.utils.decorators import validate_body
 from src.app.schemas import user_schemas
-from sqlalchemy.exc import IntegrityError
+from src.app.services.user_services import get_users_by_name, get_all_users
 
 
 user = Blueprint('user', __name__, url_prefix='/user')
@@ -34,35 +35,32 @@ user = Blueprint('user', __name__, url_prefix='/user')
 # )
 
 
-@user.route("/", defaults={"users": 1})
-@user.route("/<int:users>", methods=['GET'])
-@user.route("/<string:users>", methods=['GET'])
-@requires_access_level(['READ'])
-def list_user_per_page(users):
+@user.route("/")
+# @requires_access_level(['READ'])
+def list_user_per_page():
 
-    if type(users) == str:
+    name = request.args.get('name')
+    page = request.args.get('page')
 
-        list_name_user = User.query.filter(User.name.ilike(f"%{users}%")).all()
+    if name:
 
-        list_name_dict = users_roles_share_schema.dump(list_name_user)
+        list_name_user = get_users_by_name(name, page)
 
-        if list_name_dict == []:
+        if not list_name_user:
             error = {
                 "Error": "Usuário não encontrado."
             }
             return jsonify(error), 204
 
-        return jsonify(list_name_dict), 200
+        return jsonify(list_name_user), 200
 
-    list_users = User.query.paginate(per_page=20, page=users, error_out=True)
+    list_users = get_all_users(page)
 
-    list_users_dict = users_roles_share_schema.dump(list_users.items)
-
-    return jsonify(list_users_dict), 200
+    return jsonify(list_users), 200
 
 
 @user.route("/<int:id>", methods = ['PATCH'])
-# @requires_access_level(['UPDATE'])
+@requires_access_level(['UPDATE'])
 @validate_body(user_schemas.UpdateUserBodySchema())
 def update_user(id, body):
         try:

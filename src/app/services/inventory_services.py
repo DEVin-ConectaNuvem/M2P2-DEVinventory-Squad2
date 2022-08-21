@@ -1,4 +1,3 @@
-from src.app.models.user import User
 from src.app.models.inventory import Inventory, inventories_share_schema
 from src.app.services import user_services
 
