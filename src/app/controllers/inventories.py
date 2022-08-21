@@ -1,38 +1,34 @@
 from flask import Blueprint, jsonify, request
-from src.app import db
-from src.app.models.inventory import Inventory, inventories_share_schema
-from src.app.models.user import User
+
 from src.app.middlewares.auth import requires_access_level
-from src.app.models.inventory import Inventory, inventories_share_schema
-from src.app.schemas import product_schema
 from src.app.services.inventory_services import create_product, get_all_inventories, get_inventories_by_name
-from src.app.utils import allkeys_in, exist_product_code
-from app.utils.decorators import validate_body
+from src.app.utils import exist_product_code
+from src.app.services.queries_services import queries
+from src.app.schemas.product_schema import ProductBodySchema
+from src.app.utils.decorators import validate_body
 
 
 inventory = Blueprint('inventory', __name__, url_prefix='/inventory')
 
+
 @inventory.route("/results", methods = ['GET'])
+@requires_access_level(["READ"])
 def list_all_requirements():
 
-    users_db_data = User.query.all()
-    inventory_db_data = Inventory.query.all()
-    inventory_dict = inventories_share_schema.dump(inventory_db_data)
-
-    total_users = len(users_db_data)
-    total_items = len(inventory_dict)
+    users_db_data = queries(model='user', type_request='all')
+    inventory_db_data = queries(model='inventory', type_request='all', schema='inventories')
 
     total_items_price = 0
     total_items_loaned = 0
-    for item in inventory_dict:
+    for item in inventory_db_data:
         if item['user_id'] != None:
             total_items_loaned += 1
         if item['value'] > 0 and item['value'] != None:
             total_items_price += item['value']
 
     return_dados = {
-        'total_items': total_items,
-        'total_users': total_users,
+        'total_items': len(inventory_db_data),
+        'total_users': len(users_db_data),
         'total_items_loaned': total_items_loaned,
         'total_items_price': round(total_items_price, 2)
         }
@@ -40,39 +36,17 @@ def list_all_requirements():
     return jsonify(return_dados), 200
 
 @inventory.route("/create", methods= ["POST"])
+@validate_body(ProductBodySchema())
 @requires_access_level("WRITE")
-def create():
+def create(body):
 
-    list_keys = ["product_category_id", "product_code", "title", "value", "brand", "template", "description"]
-
-    data = allkeys_in(request.get_json(), list_keys)
-    if 'error' in data:
-        return {"error": data}, 401
-   
-    
-    inv_query = Inventory.query.all()
-    inventory = inventories_share_schema.dump(inv_query)
-    
-
-    if exist_product_code(data, inventory):
+    if exist_product_code(body['product_code']):
         return jsonify({"error": "Esse código de produto já existe"}), 400
 
-    if data["value"] <= 0:
+    if not body["value"]:
         return jsonify({"error": "O valor não pode ser menor ou igual a zero"}), 400
 
-    if "user_id" not in data.keys():
-        data['user_id'] = None
-
-    response = create_product(
-        product_category_id = data["product_category_id"],
-        user_id = data["user_id"],
-        product_code = data["product_code"],
-        title = data["title"],
-        value = data["value"],
-        brand = data["brand"],
-        template = data["template"],
-        description = data["description"]
-    )
+    response = create_product(**body)
 
     if "error" in response:
         return jsonify(response), 400
@@ -84,7 +58,6 @@ def create():
 def get_inventories():
     name = request.args.get('name')
     page = request.args.get('page', 1, type=int)
-    
     
     if name:
         inventories_by_name = get_inventories_by_name(name, page=page)

@@ -1,6 +1,5 @@
 from marshmallow import Schema, fields, ValidationError, validates
 from src.app.utils.error_messages import handle_error_messages
-import re
 
 
 def validate_password(password):
@@ -25,7 +24,7 @@ class CreateUserBodySchema(Schema):
     gender_id = fields.Integer()
     role_id = fields.Integer()
     name = fields.Str(required=True, error_messages=handle_error_messages('name'))
-    age = fields.DateTime(required=True, error_messages=handle_error_messages('age'))
+    age = fields.Date(required=True, error_messages=handle_error_messages('age'))
     email = fields.Email(required=True, error_messages=handle_error_messages('email'))
     phone = fields.Str(required=True, error_messages=handle_error_messages('phone'))
     password = fields.Str(required=True, error_messages=handle_error_messages('password'))
@@ -42,9 +41,13 @@ class CreateUserBodySchema(Schema):
 
     @validates('phone')
     def validate_phone(self, phone):
-        regex = re.compile(r"^\([1-9]{2}\) (?:[2-8]|9[1-9])[0-9]{3}-[0-9]{4}$")
-        if not re.fullmatch(regex, phone):
-            raise ValidationError('O telefone deve estar no formato: (xx) xxxxx-xxxx')
+        if not phone.isnumeric() or len(phone) != 8:
+            raise ValidationError('O telefone não é válido.')
+
+    @validates('cep')
+    def validate_cep(self, cep):
+        if not cep.isnumeric() or len(cep) != 8:
+            raise ValidationError('O cep não é válido.')
 
 
 class UpdateUserBodySchema(Schema):
@@ -52,7 +55,7 @@ class UpdateUserBodySchema(Schema):
     gender_id = fields.Integer()
     role_id = fields.Integer()
     name = fields.Str(required=True, error_messages=handle_error_messages('name'))
-    age = fields.DateTime()
+    age = fields.Date()
     email = fields.Email(required=True, error_messages=handle_error_messages('email'))
     phone = fields.Str()
     password = fields.Str(required=True, error_messages=handle_error_messages('password'))
@@ -69,6 +72,10 @@ class UpdateUserBodySchema(Schema):
 
     @validates('phone')
     def validate_phone(self, phone):
-        regex = re.compile(r"^\([1-9]{2}\) (?:[2-8]|9[1-9])[0-9]{3}-[0-9]{4}$")
-        if not re.fullmatch(regex, phone):
-            raise ValidationError('O telefone deve estar no formato: (xx) xxxxx-xxxx')
+        if not phone.isnumeric() and len(phone) != 8:
+            raise ValidationError('O telefone não é válido.')
+
+    @validates('cep')
+    def validate_cep(self, cep):
+        if not cep.isnumeric() and len(cep) != 8:
+            raise ValidationError('O cep não é válido.')

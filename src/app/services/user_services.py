@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
-from flask import jsonify
 from src.app.models.user import User
-from src.app.models.user import User, user_share_schema
+from src.app.models.user import User, user_share_schema, users_roles_share_schema
 from src.app.utils import generate_jwt
+
 
 def create_user(gender_id, city_id, role_id, name, age, email,\
     phone, password, cep,\
-    district, street, number_street, complement, landmark):
+    district, street, number_street, complement=None, landmark=None):
 
     try:
         User.seed(
@@ -29,7 +29,7 @@ def create_user(gender_id, city_id, role_id, name, age, email,\
         return {"message": "Usuário criado com sucesso."}
 
     except:
-        return {"error": "Erro na criação de Usuário. Verifique os dados novamente."}
+        return {"error": "Erro na criação de Usuário. Email já existe."}
 
 
 def make_login(email, password):
@@ -59,12 +59,10 @@ def make_login(email, password):
         return {"error": "Ops! Algo deu errado...", "status_code": 500}
 
 
-
 def get_by_id(id):
     user = User.query.filter(User.id==id).first()
-    
-    
     return user_share_schema.dump(user)
+
 
 def get_user_by_email(email):
     try:
@@ -75,3 +73,14 @@ def get_user_by_email(email):
     except:
         return { "error": "Ops! Algo deu errado...", "status_code": 500 }
 
+
+def get_users_by_name(name, page=None):
+    result = User.query.filter(User.name.ilike(f"%{name}%")).paginate(per_page=20, page=page)
+    users = users_roles_share_schema.dump(result.items)
+        
+    return users if result else None
+
+    
+def get_all_users(page=None):
+    users = users_roles_share_schema.dump(User.query.paginate(per_page=20, page=page).items)
+    return users if users else None

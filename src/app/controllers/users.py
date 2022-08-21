@@ -1,110 +1,74 @@
 import requests
 from flask import Blueprint, jsonify, request, current_app
 from flask import json
+from sqlalchemy.exc import IntegrityError
 from flask.wrappers import Response
 from werkzeug.utils import redirect
 from flask.globals import session
-from google_auth_oauthlib.flow import Flow
+
 from google import auth 
 from google.oauth2 import id_token 
 from src.app import db
 from src.app.services.user_services import make_login, create_user, get_user_by_email
-from src.app.utils import allkeys_in, generate_jwt, gera_password
+from src.app.utils import generate_jwt, gera_password
 from src.app.middlewares.auth import requires_access_level
-from src.app.models.user import User, users_roles_share_schema
+from src.app.models.user import User
 from src.app.models.city import City
 from src.app.models.gender import Gender
 from src.app.models.role import Role
 from src.app.utils.decorators import validate_body
 from src.app.schemas import user_schemas
+from src.app.services.user_services import get_users_by_name, get_all_users
+from src.app.services.queries_services import check_existence
+from src.app.utils import flow
 
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
-flow = Flow.from_client_secrets_file(
-    client_secrets_file="src/app/database/client_secret.json",
-    scopes=[
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "openid"
-    ],
-    redirect_uri = "http://localhost:5000/user/callback"
-)
-
-
-@user.route("/", defaults={"users": 1})
-@user.route("/<int:users>", methods=['GET'])
-@user.route("/<string:users>", methods=['GET'])
+@user.route("/")
 @requires_access_level(['READ'])
-def list_user_per_page(users):
+def list_user_per_page():
 
-    if type(users) == str:
+    name = request.args.get('name')
+    page = request.args.get('page')
 
-        list_name_user = User.query.filter(User.name.ilike(f"%{users}%")).all()
+    if name:
 
-        list_name_dict = users_roles_share_schema.dump(list_name_user)
+        list_name_user = get_users_by_name(name, page)
 
-        if list_name_dict == []:
+        if not list_name_user:
             error = {
                 "Error": "Usuário não encontrado."
             }
             return jsonify(error), 204
 
-        return jsonify(list_name_dict), 200
+        return jsonify(list_name_user), 200
 
-    list_users = User.query.paginate(per_page=20, page=users, error_out=True)
+    list_users = get_all_users(page)
 
-    list_users_dict = users_roles_share_schema.dump(list_users.items)
-
-    return jsonify(list_users_dict), 200
+    return jsonify(list_users), 200
 
 
-@user.route("/<int:users>", methods = ['PATCH'])
+@user.route("/<int:id>", methods = ['PATCH'])
 @requires_access_level(['UPDATE'])
 @validate_body(user_schemas.UpdateUserBodySchema())
-def atualiza_user(users, body):
+def update_user(id, body):
+        try:
+            User.query.filter_by(id=id).first_or_404()
+    
+            User.query.filter_by(id=id).update(body)
+          
+            db.session.commit()
+        
+            return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
 
-        usuario_objeto = User.query.filter_by(id=users).first()
+        except IntegrityError:
+            return jsonify({"error": 'Email já existe.'}), 409
         
-           
-        if body['age'] !='' and usuario_objeto:
-            usuario_objeto.age = body['age']
-        if body['city_id'] !='' and usuario_objeto:
-            usuario_objeto.city_id = body['city_id']
-        if body['complement'] !='' and usuario_objeto:
-            usuario_objeto.complement = body['complement']
-        if body['district'] !='' and usuario_objeto:
-            usuario_objeto.district = body['district']
-        if body['email'] !='' and usuario_objeto:
-            usuario_objeto.email = body['email']
-        if body['gender_id'] !='' and usuario_objeto:
-            usuario_objeto.gender_id = body['gender_id']
-        if body['landmark'] !='' and usuario_objeto:
-            usuario_objeto.landmark = body['landmark']                
-        if  body['name'] !='' and usuario_objeto:
-            usuario_objeto.name = body['name']
-        if  body['number_street'] !='' and usuario_objeto:
-            usuario_objeto.number_street = body['number_street']
-        if  body['street'] !='' and usuario_objeto:
-            usuario_objeto.street = body['street']
-        if  body['cep'] !='' and usuario_objeto:
-            usuario_objeto.cep = body['cep']
-        if  body['number_street'] !='' and usuario_objeto:
-            usuario_objeto.number_street = body['number_street']
-        if  body['password'] !='' and usuario_objeto:
-            usuario_objeto.password = User.encrypt_password(body['password'].encode("utf-8"))
-        if  body['phone'] !='' and usuario_objeto:
-            usuario_objeto.phone = body['phone']
-        if  body['role_id'] !='' and usuario_objeto:
-            usuario_objeto.role_id = body['role_id']
+        except Exception:
+            return jsonify({"error": 'Usuário não existe.'}), 404
         
-        if usuario_objeto:    
-           db.session.add(usuario_objeto) 
-           db.session.commit()
-           return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
-        
-        return jsonify({"error": "Usuário não encontrado."}), 404
     
 
 @user.route("/create", methods=['POST'])
@@ -112,20 +76,14 @@ def atualiza_user(users, body):
 @validate_body(user_schemas.CreateUserBodySchema())
 def post_create_users(body):
 
-    if not Gender.query.filter(Gender.id==body['gender_id']).first():
-        return jsonify({'error': 'Gênero não existente.'}), 404
+    models = [
+            {'model': Gender, 'id': body['gender_id']}, 
+            {'model': City,'id': body['city_id']},
+            {'model': Role, 'id':body['role_id']}
+        ]
 
-    if not City.query.filter(City.id==body['city_id']).first():
-        return jsonify({'error': 'Cidade não existente.'}), 404
-
-    if not Role.query.filter(Role.id==body['role_id']).first():
-        return jsonify({'error': 'Cargo não existente.'}), 404
-
-    if 'complement' not in body:
-        body['complement'] = None
-
-    if 'landmark' not in body:
-        body['landmark'] = None
+    if not all([check_existence(model['model'], model['id'])for model in models]):
+        return jsonify({'error': 'Algum dos IDs não foi encontrado.'}), 404
 
     response = create_user(**body)
 
@@ -136,16 +94,10 @@ def post_create_users(body):
 
 
 @user.route("/login", methods=['POST'])
-def user_login():
+@validate_body(user_schemas.LoginBodySchema())
+def user_login(body):
 
-    data = request.get_json()
-    keys_list = ['email', 'password']
-    check_keys = allkeys_in(data, keys_list)
-
-    if 'error' in check_keys:
-        return {"error": check_keys}, 400
-
-    response = make_login(data['email'], data['password'])
+    response = make_login(body['email'], body['password'])
 
     if "error" in response:
 
