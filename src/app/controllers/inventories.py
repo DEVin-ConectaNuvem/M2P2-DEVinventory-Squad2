@@ -94,11 +94,10 @@ def get_inventories():
 
         return jsonify(inventories_by_name), 200
     
-
     all_inventories = get_all_inventories(page)
     
-    
-
+    if not all_inventories:
+            return jsonify(), 204
     
     return jsonify(all_inventories), 200
 
