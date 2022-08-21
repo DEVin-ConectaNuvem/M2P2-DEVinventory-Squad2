@@ -1,4 +1,3 @@
-from itertools import product
 from src.app.models.city import City, cities_share_schema, city_share_schema
 from src.app.models.gender import Gender, gender_share_schema, genders_share_schema
 from src.app.models.inventory import Inventory, inventories_share_schema, inventory_share_schema
@@ -27,7 +26,7 @@ def queries(model, type_request, schema=None, filter_param=None):
     if type_request == 'filter':
         query_db_data = options_models[model].query.filter(options_models[model].name.ilike(f"%{filter_param}%")).all()
     if type_request == 'filter_by':
-        query_db_data = options_models[model].query.filter_by(product_code=filter_param).first_or_404()
+        query_db_data = options_models[model].query.filter_by(id=filter_param).first()
     if type_request == 'all':
         query_db_data = options_models[model].query.all()
     if schema:

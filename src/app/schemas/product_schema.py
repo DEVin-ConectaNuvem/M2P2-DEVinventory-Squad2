@@ -15,8 +15,8 @@ class ProductBodySchema(Schema):
     @post_load()
     def change_decimal_places(self, data, **kwargs):
         value = data.get('value')
-
-        return round(value, 2)
+        data['value'] = round(value, 2)
+        return data
 
     @validates('product_code')
     def validate_product_code(self, product_code):

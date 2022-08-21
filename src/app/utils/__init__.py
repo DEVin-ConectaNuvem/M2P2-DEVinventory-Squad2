@@ -2,6 +2,8 @@ from flask import current_app
 from jwt import encode
 import random
 
+from src.app.models.inventory import Inventory
+
 
 def allkeys_in(request_json, keys_list):
     missing_keys = []
@@ -34,11 +36,8 @@ def gera_password():
             password += password_letras
     return password
 
-def exist_product_code(body, data_in_db):
-
-    for json in data_in_db:
-        if json['product_code'] == body['product_code']:
-            return True
-
+def exist_product_code(body):
+    if Inventory.query.filter_by(product_code=body).first():
+        return True
     return False
 

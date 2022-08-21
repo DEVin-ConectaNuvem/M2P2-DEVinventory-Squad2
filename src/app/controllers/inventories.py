@@ -35,19 +35,14 @@ def list_all_requirements():
 
 @inventory.route("/create", methods= ["POST"])
 @validate_body(ProductBodySchema())
-# @requires_access_level("WRITE")
+@requires_access_level("WRITE")
 def create(body):
 
-    inventory = queries(model='inventory', type_request='filter_by', schema='inventories', filter_param=body.get('product_code'))
-    
-    if inventory:
+    if exist_product_code(body['product_code']):
         return jsonify({"error": "Esse código de produto já existe"}), 400
 
     if not body["value"]:
         return jsonify({"error": "O valor não pode ser menor ou igual a zero"}), 400
-
-    # if "user_id" not in body.keys():
-    #     body['user_id'] = None
 
     response = create_product(**body)
 
@@ -62,7 +57,6 @@ def get_inventories():
     name = request.args.get('name')
     page = request.args.get('page', 1, type=int)
     
-    
     if name:
         inventories_by_name = get_inventories_by_name(name, page=page)
         
@@ -71,10 +65,6 @@ def get_inventories():
 
         return jsonify(inventories_by_name), 200
     
-
     all_inventories = get_all_inventories(page)
-    
-    
-
     
     return jsonify(all_inventories), 200
