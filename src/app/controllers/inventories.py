@@ -105,32 +105,14 @@ def get_inventories():
 @inventory.route("/<int:inventory>", methods = ["PATCH"])
 @requires_access_level(['UPDATE'])
 @validate_body(product_schema.UpdateProductBodySchema())
-def atualiza_item(inventory, body):
+def atualiza_item(body):
     
-    list_keys = ["user_id", "title", "value", "brand", "template", "description"]
-    
-    data = allkeys_in(request.get_json(), list_keys)
-    if 'error' in data:
-        return {"error": data}, 401
-    
-    inv_query = Inventory.query.all()
-    inventory = inventories_share_schema.dump(inv_query)
-    
-    
-    if data["value"] <= 0:
-        return jsonify({"error": "O valor não pode ser menor ou igual a zero"}), 400
-    
-    if "user_id" not in data.keys():
-        data['user_id'] = None
-    
-    inventory_update = Inventory.query.filter_by(id=inventory).first()
-    
-    if body[inventory_update] != '' and inventory_update:
-        setattr(inventory_update.update_item, body[inventory_update], list_keys)
-    
-    if inventory_update:    
-           db.session.add(inventory_update) 
-           db.session.commit()
-           return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
-        
-    return jsonify({"error": "Usuário não encontrado."}), 404
+    try:
+        Inventory.query.filter_by(id=id).first_or_404()
+
+        inventario_object = Inventory.query.filter_by(id=id)
+        inventario_object.update(body)
+        db.session.commit()
+        return jsonify({"Message": "Item atualizado com sucesso."}), 204
+    except:
+        return jsonify({"error": 'Item não encontrado.'}), 404
