@@ -17,6 +17,7 @@ from src.app.models.gender import Gender
 from src.app.models.role import Role
 from src.app.utils.decorators import validate_body
 from src.app.schemas import user_schemas
+from sqlalchemy.exc import IntegrityError
 
 
 user = Blueprint('user', __name__, url_prefix='/user')
@@ -60,51 +61,25 @@ def list_user_per_page(users):
     return jsonify(list_users_dict), 200
 
 
-@user.route("/<int:users>", methods = ['PATCH'])
-@requires_access_level(['UPDATE'])
+@user.route("/<int:id>", methods = ['PATCH'])
+# @requires_access_level(['UPDATE'])
 @validate_body(user_schemas.UpdateUserBodySchema())
-def atualiza_user(users, body):
+def update_user(id, body):
+        try:
+            User.query.filter_by(id=id).first_or_404()
+    
+            User.query.filter_by(id=id).update(body)
+          
+            db.session.commit()
+        
+            return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
 
-        usuario_objeto = User.query.filter_by(id=users).first()
+        except IntegrityError:
+            return jsonify({"error": 'Email já existe.'}), 409
         
-           
-        if body['age'] !='' and usuario_objeto:
-            usuario_objeto.age = body['age']
-        if body['city_id'] !='' and usuario_objeto:
-            usuario_objeto.city_id = body['city_id']
-        if body['complement'] !='' and usuario_objeto:
-            usuario_objeto.complement = body['complement']
-        if body['district'] !='' and usuario_objeto:
-            usuario_objeto.district = body['district']
-        if body['email'] !='' and usuario_objeto:
-            usuario_objeto.email = body['email']
-        if body['gender_id'] !='' and usuario_objeto:
-            usuario_objeto.gender_id = body['gender_id']
-        if body['landmark'] !='' and usuario_objeto:
-            usuario_objeto.landmark = body['landmark']                
-        if  body['name'] !='' and usuario_objeto:
-            usuario_objeto.name = body['name']
-        if  body['number_street'] !='' and usuario_objeto:
-            usuario_objeto.number_street = body['number_street']
-        if  body['street'] !='' and usuario_objeto:
-            usuario_objeto.street = body['street']
-        if  body['cep'] !='' and usuario_objeto:
-            usuario_objeto.cep = body['cep']
-        if  body['number_street'] !='' and usuario_objeto:
-            usuario_objeto.number_street = body['number_street']
-        if  body['password'] !='' and usuario_objeto:
-            usuario_objeto.password = User.encrypt_password(body['password'].encode("utf-8"))
-        if  body['phone'] !='' and usuario_objeto:
-            usuario_objeto.phone = body['phone']
-        if  body['role_id'] !='' and usuario_objeto:
-            usuario_objeto.role_id = body['role_id']
+        except Exception:
+            return jsonify({"error": 'Usuário não existe.'}), 404
         
-        if usuario_objeto:    
-           db.session.add(usuario_objeto) 
-           db.session.commit()
-           return jsonify({"Message": "Usuário atualizado com sucesso."}), 204
-        
-        return jsonify({"error": "Usuário não encontrado."}), 404
     
 
 @user.route("/create", methods=['POST'])
