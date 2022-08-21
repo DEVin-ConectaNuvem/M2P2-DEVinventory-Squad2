@@ -1,6 +1,7 @@
 <h2 align="center">Projeto DEVinventory</h1>
 
-![logo_size_invert(1)](https://user-images.githubusercontent.com/101053966/185764651-39c3e59e-c945-405f-90f0-792ba5cad5bb.jpg)
+![Image](https://user-images.githubusercontent.com/101053966/185769837-ccf6b9cc-4d90-43f7-835a-7ad3feabf94a.jpeg)
+
 
 ## Empresa
 
