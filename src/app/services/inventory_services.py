@@ -14,7 +14,7 @@ def create_product(product_category_id, product_code, title, value,brand, templa
             template = template, 
             description = description
         )
-        
+
         return ({'message': 'Item cadastrado com sucesso'})
     
     except:

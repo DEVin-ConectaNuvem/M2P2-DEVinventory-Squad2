@@ -1,7 +1,6 @@
-from sqlalchemy.orm import load_only
 from datetime import datetime, timedelta
 from src.app.models.user import User
-from src.app.models.user import User, user_share_schema, users_share_schema, users_roles_share_schema
+from src.app.models.user import User, user_share_schema, users_roles_share_schema
 from src.app.utils import generate_jwt
 
 

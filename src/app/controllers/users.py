@@ -24,19 +24,19 @@ from src.app.services.user_services import get_users_by_name, get_all_users
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
-# flow = Flow.from_client_secrets_file(
-#     client_secrets_file="src/app/database/client_secret.json",
-#     scopes=[
-#         "https://www.googleapis.com/auth/userinfo.email",
-#         "https://www.googleapis.com/auth/userinfo.profile",
-#         "openid"
-#     ],
-#     redirect_uri = "http://localhost:5000/user/callback"
-# )
+flow = Flow.from_client_secrets_file(
+    client_secrets_file="src/app/database/client_secret.json",
+    scopes=[
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
+    ],
+    redirect_uri = "http://localhost:5000/user/callback"
+)
 
 
 @user.route("/")
-# @requires_access_level(['READ'])
+@requires_access_level(['READ'])
 def list_user_per_page():
 
     name = request.args.get('name')
