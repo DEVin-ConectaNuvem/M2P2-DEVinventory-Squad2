@@ -22,3 +22,19 @@ class ProductBodySchema(Schema):
     def validate_product_code(self, product_code):
         if product_code < 8:
             raise ValidationError('O código do produto não pode ser menor que 8.')
+
+
+class UpdateProductBodySchema(Schema):
+    user_id = fields.Integer()
+    title = fields.Str(required=True, error_messages=handle_error_messages('title'))
+    value = fields.Float(required=True, error_messages=handle_error_messages('value'))
+    brand = fields.Str(required=True, error_messages=handle_error_messages('brand'))
+    template = fields.Str(required=True, error_messages=handle_error_messages('template'))
+    description = fields.Str(required=True, error_messages=handle_error_messages('description'))
+    
+    @post_load
+    def validate_user_id(self, data, **kwargs):
+        if not data.get('user_id'):
+            data['user_id'] = None
+            return data
+

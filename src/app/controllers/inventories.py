@@ -70,3 +70,18 @@ def get_inventories():
     all_inventories = get_all_inventories(page)
     
     return jsonify(all_inventories), 200
+
+@inventory.route("/<int:inventory>", methods = ["PATCH"])
+@requires_access_level(['UPDATE'])
+@validate_body(product_schema.UpdateProductBodySchema())
+def atualiza_item(body):
+    
+    try:
+        Inventory.query.filter_by(id=id).first_or_404()
+
+        inventario_object = Inventory.query.filter_by(id=id)
+        inventario_object.update(body)
+        db.session.commit()
+        return jsonify({"Message": "Item atualizado com sucesso."}), 204
+    except:
+        return jsonify({"error": 'Item não encontrado.'}), 404
