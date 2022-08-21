@@ -40,6 +40,17 @@ class Inventory(db.Model):
             description = description
         )
         inventory.save()
+    
+    def update_item(cls, user_id, title, value, brand, template, description):
+        inventory = Inventory(
+            user_id = user_id, 
+            title = title,  
+            value = value, 
+            brand = brand, 
+            template = template, 
+            description = description
+        )
+        inventory.save()
 
     def save(self): 
         db.session.add(self)
