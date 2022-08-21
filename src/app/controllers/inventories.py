@@ -1,9 +1,13 @@
 from flask import Blueprint, jsonify, request
+from src.app import db
+from src.app.models.inventory import Inventory, inventories_share_schema
 from src.app.models.user import User
 from src.app.middlewares.auth import requires_access_level
 from src.app.models.inventory import Inventory, inventories_share_schema
+from src.app.schemas import product_schema
 from src.app.services.inventory_services import create_product, get_all_inventories, get_inventories_by_name
 from src.app.utils import allkeys_in, exist_product_code
+from app.utils.decorators import validate_body
 
 
 inventory = Blueprint('inventory', __name__, url_prefix='/inventory')
@@ -47,7 +51,7 @@ def create():
    
     
     inv_query = Inventory.query.all()
-    inventory = intentories_share_schema.dump(inv_query)
+    inventory = inventories_share_schema.dump(inv_query)
     
 
     if exist_product_code(data, inventory):
@@ -97,3 +101,18 @@ def get_inventories():
 
     
     return jsonify(all_inventories), 200
+
+@inventory.route("/<int:inventory>", methods = ["PATCH"])
+@requires_access_level(['UPDATE'])
+@validate_body(product_schema.UpdateProductBodySchema())
+def atualiza_item(body):
+    
+    try:
+        Inventory.query.filter_by(id=id).first_or_404()
+
+        inventario_object = Inventory.query.filter_by(id=id)
+        inventario_object.update(body)
+        db.session.commit()
+        return jsonify({"Message": "Item atualizado com sucesso."}), 204
+    except:
+        return jsonify({"error": 'Item não encontrado.'}), 404
