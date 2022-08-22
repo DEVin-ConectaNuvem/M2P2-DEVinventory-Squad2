@@ -122,11 +122,11 @@ poetry run flask populate_db
 2. `[POST] /auth/google (users)` - [Regras endpoint 2](#regras-endpoint-2)
 3. `[GET] /callback (users)` - [Regras endpoint 3](#regras-endpoint-3)
 4. `[POST] /user/create (users)` - [Regras endpoint 4](#regras-endpoint-4)
-5. `[GET] /user/<int:users> ou <string:users> (users)` - [Regras endpoint 5](#regras-endpoint-5)
+5. `[GET] /user?<int:id> ou <string:name> (users)` - [Regras endpoint 5](#regras-endpoint-5)
 6. `[PATCH] /user/<int:users> (users)` - [Regras endpoint 6](#regras-endpoint-6)
 7. `[POST] /inventory (inventories)` - [Regras endpoint 7](#regras-endpoint-7)
-8. `[PATCH]/user/<int:inventory> (inventory)` - [Regras endpoint 8](#regras-endpoint-8)
-9.
+8. `[PATCH] /user/<int:inventory> (inventory)` - [Regras endpoint 8](#regras-endpoint-8)
+9. `[GET] /inventory?<int:id> ou <string:name> (inventories)` - [Regras endpoint 9](#regras-endpoint-9)
 10. `[GET] /inventory/results (inventories)` - [Regras endpoint 10](#regras-endpoint-10)
 
 ### Regras ENDPOINT 1:
@@ -243,10 +243,10 @@ Se não, irá dar NO CONTENT 204
 
 ### Regras ENDPOINT 8:
 
-- O usuário deve estar logado e possuir autorização UPDATE para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
-- É possível alterar todos os campos, exceto product_category_id, product_code, portanto deve ter uma validação para esses campos, retornando 400 caso algum deles seja enviado.
-- Deve respeitar as validações anteriores, endpoint de POST.
-- Ao atualizar o item, deve-se retornar o Status 204 (No Content).
+- O usuário deve estar logado e possuir autorização UPDATE para este endpoint de usuário. Caso não possua, irá retornar o Status de Erro 403 (Forbidden).
+- É possível alterar todos os campos, exceto product_category_id e product_code, retornando 400 caso algum deles seja enviado.
+- Irá respeitar as validações da respectiva model.
+- Ao atualizar o item, irá retornar o Status 204 (No Content).
 
 #### Entradas
 
@@ -255,17 +255,16 @@ Se não, irá dar NO CONTENT 204
 
 ### Regras ENDPOINT 9:
 
-Entrada:
-name: string (Query param não obrigatório)
-
-- O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, deve-se retornar o Status de Erro 403 (Forbidden).
-- Deve-se retornar todos os itens que contenham o nome (title).
-- O endpoint deve ser paginado, retornando 20 itens por página.
-- Obs: em caso de não ser enviado nenhum queryParam, deve-se retornar todos os itens de acordo com a paginação.
+- O usuário deve estar logado e possuir autorização READ para este endpoint de usuário. Caso não possua, retornará o Status de Erro 403 (Forbidden).
+- Retornará todos os itens que contenham o nome (title) passado no query param.
+- O endpoint é paginado, retornando 20 itens por página.
+- Obs: em caso de não ser enviado nenhum queryParam, irá retornar todos os itens de acordo com a paginação.
 - Caso o user_id seja null, retornar o nome do usuário como {id: None, name: “Na Empresa”}.
-- Caso não seja encontrado nenhum resultado, deve-se retornar o Status 204 (No Content).
-- Caso seja encontrado ao menos um resultado, deve-se retornar um JSON contendo o id, o product_code, o title, o product_category, user, além do Status 200 (OK).
+- Caso não seja encontrado nenhum resultado, retornará o Status 204 (No Content).
+- Caso seja encontrado ao menos um resultado, retornará um JSON contendo o id, product_code, title, product_category, user, além do Status 200 (OK).
 
+#### Entrada:
+name: string (Query param não obrigatório)
 
 ### Regras ENDPOINT 10
 
