@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify, request
 
+from src.app import db
+from src.app.models.inventory import Inventory
 from src.app.middlewares.auth import requires_access_level
 from src.app.services.inventory_services import create_product, get_all_inventories, get_inventories_by_name
 from src.app.utils import exist_product_code
 from src.app.services.queries_services import queries
-from src.app.schemas.product_schema import ProductBodySchema
+from src.app.schemas.product_schema import ProductBodySchema, UpdateProductBodySchema
 from src.app.utils.decorators import validate_body
 
 
@@ -35,9 +37,10 @@ def list_all_requirements():
 
     return jsonify(return_dados), 200
 
+
 @inventory.route("/create", methods= ["POST"])
 @validate_body(ProductBodySchema())
-@requires_access_level("WRITE")
+@requires_access_level(["WRITE"])
 def create(body):
 
     if exist_product_code(body['product_code']):
@@ -52,6 +55,7 @@ def create(body):
         return jsonify(response), 400
 
     return jsonify(response), 201
+
 
 @inventory.route('/', methods=['GET'])
 @requires_access_level(["READ"])
@@ -74,16 +78,16 @@ def get_inventories():
     
     return jsonify(all_inventories), 200
 
-@inventory.route("/<int:inventory>", methods = ["PATCH"])
+
+@inventory.route("/<int:id>", methods = ["PATCH"])
 @requires_access_level(['UPDATE'])
-@validate_body(product_schema.UpdateProductBodySchema())
-def atualiza_item(body):
-    
+@validate_body(UpdateProductBodySchema())
+def update_item(id, body):
+
     try:
         Inventory.query.filter_by(id=id).first_or_404()
 
-        inventario_object = Inventory.query.filter_by(id=id)
-        inventario_object.update(body)
+        Inventory.query.filter_by(id=id).update(body)
         db.session.commit()
         return jsonify({"Message": "Item atualizado com sucesso."}), 204
     except:
