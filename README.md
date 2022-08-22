@@ -137,6 +137,7 @@ poetry run flask populate_db
 - se o e-mail que for enviado não existir no banco de dados, será retornado um erro informando que não foi possível efetuar o login, utilizando o status 401;
 - se a senha estiver errada, será retornado um erro informando que não foi possível efetuar o login, utilizando o status 401;
 - Caso, todas as informações estejam corretas, será retornado o token da aplicação utilizando o código 200.
+- Após realizado o login, o usuário receberá um token. O token deve ser adicionado ao HEADERS da requisição com o tipo Bearer.
 
 #### Body parameters
 
