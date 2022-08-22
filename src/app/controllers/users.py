@@ -26,12 +26,12 @@ from src.app.utils import flow
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
-@user.route("/")
+@user.route("/", methods=['GET'])
 @requires_access_level(['READ'])
 def list_user_per_page():
 
     name = request.args.get('name')
-    page = request.args.get('page')
+    page = request.args.get('page', 1, type=int)
 
     if name:
 
