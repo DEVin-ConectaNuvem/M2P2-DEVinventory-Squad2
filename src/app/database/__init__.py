@@ -171,5 +171,20 @@ def populate_db():
         street = user['location']['street']['name'],
         number_street = user['location']['street']['number']
         )
-    
+    User.seed(
+    gender_id = 1,
+    city_id= 1,
+    role_id=random.randint(1,4),
+    name = 'Luis Lopes',
+    age = "1991-12-21",
+    email = "luislopes@gmail.com",
+    phone = "9999999999",
+    password = "123Mudar!",
+    cep=None,
+    complement=None,
+    landmark=None,
+    district=None,
+    street = "Rua teste",
+    number_street = 171
+    )
     return print('Dados inseridos na database.')

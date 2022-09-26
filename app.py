@@ -1,10 +1,11 @@
+import os
 import click
 from flask.cli import with_appcontext
 from src.app import create_app, db
 from src.app.database import populate_db
 from src.app.routes import routes
 
-app = create_app()
+app = create_app(os.getenv('FLASK_ENV'))
 
 routes(app)
 

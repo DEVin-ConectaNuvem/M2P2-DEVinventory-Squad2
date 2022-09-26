@@ -4,9 +4,13 @@ from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
+NAME_DB = os.getenv('NAME_DB')
+USER_DB = os.getenv('USER_DB')
+PASSWORD_DB = os.getenv('PASSWORD_DB')
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    FLASK_ENV = os.getenv('FLASK_ENV')
+    FLASK_APP = os.getenv('FLASK_APP')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
     SECRET_KEY = os.getenv('SECRET_KEY', 'SECRET')
     TOKEN_EXPIRE_HOURS = os.getenv('TOKEN_EXPIRE_HOURS')
@@ -19,21 +23,26 @@ class Config:
 class Development(Config):
     DEBUG = True
     TESTING = False
-
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{USER_DB}:{PASSWORD_DB}@localhost:5432/{NAME_DB}-development"
 
 class Testing(Config):
     DEBUG = False
     TESTING = True
-
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{USER_DB}:{PASSWORD_DB}@localhost:5432/{NAME_DB}-testing"
 
 class Homologation(Config):
     DEBUG = False
     TESTING = False
-
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{USER_DB}:{PASSWORD_DB}@localhost:5432/{NAME_DB}-homologation"
 
 class Production(Config):
     DEBUG = False
     TESTING = False
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{USER_DB}:{PASSWORD_DB}@localhost:5432/{NAME_DB}-production"
 
-
-app_config = { "development": Development, "production": Production, "testing": Testing, "homologation": Homologation }
+app_config = { 
+    "development": Development,
+    "production": Production, 
+    "testing": Testing, 
+    "homologation": Homologation 
+}
